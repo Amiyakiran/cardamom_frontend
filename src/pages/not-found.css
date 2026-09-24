@@ -1,0 +1,105 @@
+.not-found-page {
+  min-height: 100vh;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #1d3a27;
+  background: #f4f1e715 url('/assets/pagenotfound.jpg') center / cover no-repeat;
+  font-family: var(--font-body);
+}
+
+.not-found-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(250, 248, 238, 0.492);
+}
+
+.not-found-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+  text-align: center;
+}
+
+.not-found-mark {
+  color: #7f9567;
+  font-family: var(--font-display);
+  font-size: 52px;
+  line-height: 0.8;
+  margin-bottom: 34px;
+}
+
+.not-found-code {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(100px, 13vw, 160px);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+}
+
+.not-found-content h1 {
+  margin: 22px 0 24px;
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1;
+  font-weight: 700;
+}
+
+.not-found-rule {
+  width: 44px;
+  height: 1px;
+  background: #c5a45b;
+}
+
+.not-found-message {
+  margin: 26px 0 30px;
+  color: #607161;
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+}
+
+.not-found-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 26px;
+  border-radius: 999px;
+  background: #244b30;
+  color: #f9f6e9;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.not-found-button span {
+  color: #d9bd6d;
+  font-size: 18px;
+}
+
+.not-found-button:hover {
+  background: #173a23;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .not-found-content {
+    padding: 24px;
+  }
+
+  .not-found-mark {
+    margin-bottom: 26px;
+  }
+
+  .not-found-message {
+    font-size: 14px;
+  }
+
+  .not-found-break {
+    display: none;
+  }
+}

@@ -1,0 +1,40 @@
+:root {
+  --font-body: "Manrope", sans-serif;
+  --font-display: "Playfair Display", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+p {
+  font-size: 14px;
+  font-family: "Manrope", sans-serif !important;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+}

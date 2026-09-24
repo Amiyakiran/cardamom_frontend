@@ -1,0 +1,233 @@
+.admin-page-shell {
+    min-height: 100vh;
+    display: flex;
+    background: #f4f9fa;
+}
+
+.admin-page-content {
+    flex: 1;
+    min-width: 0;
+    padding: 32px;
+    color: #173b4b;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+}
+
+.site-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fffdf4;
+    text-decoration: none;
+    flex-shrink: 0;
+    margin: 20px 0;
+}
+
+.site-brand-mark {
+    width: 48px;
+    height: 58px;
+    object-fit: contain;
+}
+
+.site-brand-copy {
+    display: block;
+    line-height: 1;
+    text-align: center;
+}
+
+.site-brand-copy strong,
+.site-brand-copy small {
+    display: block;
+}
+
+.site-brand-copy strong {
+    font: 20px var(--font-display);
+    letter-spacing: .04em;
+}
+
+.site-brand-copy small {
+    margin-top: 7px;
+    color: #e4c778;
+    font: 9px var(--font-body);
+    letter-spacing: .38em;
+}
+
+.admin-sidebar-design {
+    --sidebar-green: #00382a;
+    width: 245px;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    flex: 0 0 245px;
+    color: #f4faf7;
+    background: linear-gradient(145deg, #003a2b 0%, #002d22 62%, #001f19 100%);
+    font-family: "Manrope", sans-serif;
+}
+
+.admin-sidebar-design::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .3;
+    background: linear-gradient(115deg, transparent 35%, rgba(79, 125, 65, .16) 50%, transparent 65%);
+}
+
+.admin-sidebar-design__brand {
+    height: 98px;
+    display: flex;
+    align-items: center;
+    padding: 13px 21px;
+    position: relative;
+    z-index: 1;
+}
+
+.admin-sidebar-design__brand img {
+    width: 202px;
+    max-height: 74px;
+    object-fit: contain;
+    object-position: left center;
+}
+
+.admin-sidebar-design__nav {
+    display: grid;
+    gap: 5px;
+    padding: 9px 9px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.admin-sidebar-design__nav a {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0 15px;
+    border: 0;
+    border-radius: 7px;
+    color: #edf7f3;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color .18s ease, transform .18s ease;
+}
+
+.admin-sidebar-design__nav a:hover,
+.admin-sidebar-design__nav a.is-active {
+    background: #258f5a;
+}
+
+.admin-sidebar-design__nav a:hover {
+    transform: translateX(2px);
+}
+
+.admin-sidebar-design__nav a>svg:first-child {
+    width: 21px;
+    color: #e0e9e5;
+    font-size: 20px;
+}
+
+.admin-sidebar-design__nav .nav-arrow {
+    width: auto;
+    margin-left: auto;
+    color: #f2faf7;
+    font-size: 13px;
+}
+
+.admin-sidebar-design__footer {
+    position: absolute;
+    inset: auto 0 0;
+    height: 370px;
+    padding-top: 30px;
+    overflow: hidden;
+    text-align: center;
+    background: linear-gradient(180deg, transparent 0%, rgba(35, 91, 43, .12) 30%, rgba(62, 108, 49, .55) 100%);
+}
+
+.admin-sidebar-design__footer p {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    color: #c8d3ab;
+    font-family: "Playfair Display", serif;
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.45;
+    transform: rotate(-7deg);
+}
+
+.admin-sidebar-design__footer>svg {
+    position: relative;
+    z-index: 2;
+    width: 25px;
+    margin-top: 13px;
+    color: #83a737;
+    transform: rotate(-22deg);
+}
+
+.admin-sidebar-design__foliage {
+    position: absolute;
+    inset: auto -25px -50px;
+    height: 205px;
+    background: url('/assets/pod.png') center bottom / cover no-repeat;
+    filter: saturate(.9) brightness(.82);
+    transform: scale(1.45);
+    transform-origin: bottom center;
+}
+
+@media (max-width: 700px) {
+    .admin-sidebar-design {
+        width: 215px;
+        flex-basis: 215px;
+    }
+
+    .admin-sidebar-design__brand img {
+        width: 178px;
+    }
+
+    .admin-sidebar-design__nav a {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 560px) {
+    .admin-sidebar-design {
+        width: 68px;
+        flex-basis: 68px;
+    }
+
+    .site-brand {
+        justify-content: center;
+        margin: 13px 0 18px;
+    }
+
+    .site-brand-mark {
+        width: 38px;
+        height: 46px;
+    }
+
+    .site-brand-copy,
+    .admin-sidebar-design__nav .nav-arrow {
+        display: none;
+    }
+
+    .admin-sidebar-design__nav {
+        padding: 4px 6px 0;
+        gap: 6px;
+    }
+
+    .admin-sidebar-design__nav a {
+        justify-content: center;
+        gap: 0;
+        padding: 0;
+        height: 42px;
+    }
+
+    .admin-sidebar-design__nav a>svg:first-child {
+        width: auto;
+        font-size: 17px;
+    }
+}
