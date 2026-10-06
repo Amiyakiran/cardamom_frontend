@@ -102,7 +102,7 @@ export default function Blog() {
   return (
     <div className="blog-page">
       <section className="hero-banner">
-        <video
+        {/* <video
           className="hero-video"
           autoPlay
           muted
@@ -110,14 +110,14 @@ export default function Blog() {
           playsInline
         >
           <source src="/assets/video.mp4" type="video/mp4" />
-        </video>
+        </video> */}
 
         <div className="hero-overlay" />
         <Header activePage="blog" />
 
         <div className="hero-text">
-          <div className="mini-title"><span>♧</span> OUR BLOG <i /></div>
-          <h1>Stories, Tips &amp; Insights from the Cardamom Hills</h1>
+          <p className="mini-title"><span>♧</span>  OUR BLOG <i/></p>
+          <h1>Stories, Tips &amp; Insights from the Misty Hills</h1>
           <p>
             Explore the journey of cardamom — from our lush farms to your cup.
             Discover farming stories, health benefits, recipes and more.
@@ -158,7 +158,7 @@ export default function Blog() {
         </section>
 
         <aside className="sidebar-column">
-          <div className="sidebar-box search-box">
+          <div className="sidebar-box  search-box">
             <span className="search-icon">⌕</span>
             <input type="text" placeholder="Search blog..." />
           </div>

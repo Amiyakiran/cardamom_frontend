@@ -16,6 +16,8 @@ import AdminReports from './pages/admin/AdminReports'
 import Admincoupons from './pages/admin/Admincoupons'
 import Adminsetting from './pages/admin/Adminsetting'
 import Admincustomers from './pages/admin/Admincustomers'
+import Allproducts from './pages/Allproducts'
+
 function App() {
 
 
@@ -30,7 +32,8 @@ function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/:user-profile/:id" element={<Profile />} />
+        <Route path="/all-products" element={<Allproducts />} />
         <Route path="/admin/dashboard" element={<Admindashboard />} />
         <Route path="/admin/products" element={<Adminproducts />} />
         <Route path="/admin/orders" element={<Adminorders />} />

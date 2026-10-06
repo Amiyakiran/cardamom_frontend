@@ -1,28 +1,48 @@
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import './home.css'
+import { Link, Links } from 'react-router-dom'
+import {faArrowRight}from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' // Icon component
+import { getHomeProductsApi } from '../services/allApi'
+import { useState , useEffect } from 'react'
+import { serverUrl } from '../services/serverUrl'
 
-
-const products = [
-  ['Premium Green Cardamom', 'Bold aroma · Rich flavor'],
-  ['Farm Fresh Packaging', 'Long lasting freshness'],
-  ['Whole Pods', '100% natural · No additives'],
+// const products = [
+//   ['Premium Green Cardamom', 'Bold aroma · Rich flavor'],
+//   ['Farm Fresh Packaging', 'Long lasting freshness'],
+//   ['Whole Pods', '100% natural · No additives'],
  
-]
+// ]
 
 function Home() {
+
+  const [products, setProducts] = useState([])
+
+  const getProducts = async()=>{
+    const result = await getHomeProductsApi()
+    // console.log(result);
+     setProducts(result?.data)
+  }
+  console.log(products);
+  
+
+useEffect(()=>{
+  getProducts()
+},[])
+
   return (
     <div className="home-page">
       <section className="home-hero">
         <div className="home-hero-image">
-          <img className="home-hero-image-asset" src="/assets/pod2.png" alt="Fresh cardamom pods" />
+          <img className="home-hero-image-asset" src="/assets/hero_IMAGE.png" alt="Fresh cardamom pods" />
         </div>
         <div className="home-hero-shade" />
         <Header activePage="home" />
         <div className="home-hero-copy">
-          <p className="home-kicker">PURENESS FROM NATURE</p>
-          <h1>The True Essence<br />of Cardamom</h1>
-          <p>From misty hills to your cup, discover the unmatched aroma, purity and taste of premium cardamom.</p>
+          <p className="home-kicker mini-title"><span>♧</span> PURENESS FROM NATURE <i/></p>
+          <h1>The True Essence <br /> of Spices</h1>
+          <p>From misty hills to your cup, discover the unmatched aroma,<br />  purity and taste of premium cardamom.</p>
           <span className="home-scroll-cue"><i /> Scroll to explore</span>
         </div>
       </section>
@@ -31,19 +51,24 @@ function Home() {
 
         <section className="home-products">
           <p className="home-kicker">OUR PRODUCTS</p>
-          <h2>Premium Cardamom<br />for a Richer Tomorrow</h2>
+          <h2>Elite Spices<br />for a Richer Tomorrow</h2>
           <p>Pure. Natural. Authentic.</p>
           <div className="home-product-grid">
-            {products.map(([title, text], index) => (
-              <article className="home-product-card" key={title}>
-                <div className={`home-product-visual visual-${index + 1}`}><span>GG</span></div>
-                <h3>{title}</h3>
-                <p>{text}</p>
-                <button type="button">View Details <span>→</span></button>
+            {products.map((item, index) => (
+              <article className="home-product-card" key={item.title}>
+                <div className={`home-product-visual visual-${index + 1}`}>
+                  <img className="home-product-image" src={`${serverUrl}/uploads/${item.image}`} alt={item.title} />
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+                <button type="button"><Link style={{textDecoration:'none', color:'black'}} to="/all-products">View Details <span>→</span></Link></button>
               </article>
             ))}
           </div>
         </section>
+      <div style={{display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column'}}>
+        <Link to="/all-products" style={{fontSize: '16px', color: '#9e9653'}}>let's have a look to all our Products<span>→</span></Link>
+         </div>
       </main>
       <Footer />
     </div>

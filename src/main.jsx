@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import ContextShare from './context/ContextShare.jsx'
 import 'react-toastify/dist/ReactToastify.css'
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 
 const GOOGLE_CLIENT_ID = '468396612144-gm41drmhhfgq7dg6b00eijf6omlb4rgt.apps.googleusercontent.com'
 

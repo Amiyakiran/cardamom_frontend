@@ -103,10 +103,7 @@ function Blog() {
             <Sidebar activeItem="Blog" />
             <main className="admin-blog-content">
                 <header className="admin-blog-topbar">
-                    <label className="admin-global-search">
-                        <FontAwesomeIcon icon={faMagnifyingGlass} />
-                        <input placeholder="Search here..." />
-                    </label>
+                   
                     <div className="admin-account">
                         <button type="button" aria-label="Notifications">
                             <FontAwesomeIcon icon={faBell} />
@@ -275,10 +272,7 @@ function Blog() {
                     </div>
                 </section>
             </main>
-            <ToastContainer
-                position='top-right'
-                autoClose={3000}
-                theme='colored' />
+            <ToastContainer position='top-right' autoClose={3000} theme='colored' />
         </div>
     )
 }

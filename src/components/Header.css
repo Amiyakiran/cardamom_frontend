@@ -47,7 +47,8 @@
 .site-brand-copy small {
   margin-top: 7px;
   color: #e4c778;
-  font: 9px var(--font-body);
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+font-size: 11px !important;
   letter-spacing: .38em;
 }
 
@@ -67,10 +68,24 @@
   background: none;
   color: #fffdf4;
   cursor: pointer;
-  font: 14px var(--font-display);
+  font-size: 11px ;
   text-decoration: none;
+  letter-spacing: .28em;
   white-space: nowrap;
-}
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+/* .site-nav1 a,
+.site-login1 {
+  position: relative;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  color: black;
+  cursor: pointer;
+  font-size: 11px ;
+  text-decoration: none;
+  letter-spacing: .28em;
+  white-space: nowrap;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;} */
 
 .site-nav a.active,
 .site-nav a:hover {

@@ -9,9 +9,9 @@ const footerPoints = [
   [faGlobe, 'TRUSTED GLOBALLY', 'From India to the World'],
 ]
 
-export default function Footer() {
+export default function Footer({login}) {
   return (
-    <footer className="site-footer">
+    <footer className={login?"site-footer1":"site-footer"}>
       <div className="site-footer-points">
         {footerPoints.map(([icon, title, description]) => (
           <div className="site-footer-point" key={title}>

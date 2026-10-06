@@ -1,6 +1,8 @@
 :root {
   --font-body: "Manrope", sans-serif;
   --font-display: "Playfair Display", serif;
+  /* background-color: #f6efd6; */
+  background-image: url('/assets/marblebg.png') !important;
 }
 
 * {

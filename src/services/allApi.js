@@ -59,9 +59,48 @@ export const forgotPasswordApi = async(body)=>{
         return error;
     }
 }
+
+//forgotPassword
+export const resetPasswordApi = async(body, token)=>{
+  try {
+        return await commonApi("POST", `${serverUrl}/reset_password/${token}`, body);
+        
+    } catch (error) {
+        return error;
+    }
+}
+
+//get all products
+
+export const getAllProductApi = async(search)=>{
+  try {
+    return await commonApi('GET', `${serverUrl}/all_products?search=${search}`)
+  } catch (error) {
+    return error
+  }
+}
+
+//get a particular product
+export const getAproductApi = async(id )=>{
+  try {
+    return await commonApi('GET', `${serverUrl}/a_product/${id}`)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+//get home products
+export const getHomeProductsApi = async()=>{
+  try {
+    return await commonApi('GET', `${serverUrl}/home_products`)
+  }catch (error) {
+    return error
+  }
+}
 //----------------------------------------------------------
 
-//customer
+//---------------------------customer--------------------------
 
 //send message
 export const sendMessageApi = async(body)=>{
@@ -73,6 +112,35 @@ export const sendMessageApi = async(body)=>{
   }
 }
 
+//add to wishlist
+export const addToWishlistApi = async(body, userId)=>{
+  try {
+    return await commonApi('POST',`${serverUrl}/add_to_wishlist/${userId}`,body)
+  }
+  catch(error){
+    return error
+  }
+}
+
+//delete from wishlist
+export const deleteFromWishlistApi = async(id)=>{
+  try {
+    return await commonApi('DELETE', `${serverUrl}/delete_from_wishlist/${id}`)
+    
+  } catch (error) {
+     return error
+  }
+}
+
+//get all wishlist
+export const getAllWishlistProductApi = async(userId)=>{
+  try {
+        return await commonApi('GET', `${serverUrl}/wishlist/${userId}`)
+  } catch (error) {
+     return error
+  }
+}
+
 //----------------------------------------------------------
 
 //admin
@@ -81,6 +149,59 @@ export const sendMessageApi = async(body)=>{
 export const addBlogApi = async(body, reqHeader)=>{
    try {
     return await commonApi('POST',`${serverUrl}/add-blog`,body, reqHeader)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+//add products
+
+export const addProductApi = async(body, reqHeader)=>{
+   try {
+    return await commonApi('POST',`${serverUrl}/add-products`,body, reqHeader)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+//delete product
+
+export const deleteproductApi = async(id)=>{
+  try {
+    return await commonApi('DELETE', `${serverUrl}/delete_product/${id}`)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+//edit product
+
+export const editproductApi = async(id , body, header)=>{
+  try {
+    return await commonApi('PUT', `${serverUrl}/edit_product/${id}`, body, header)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+//get all users
+export const getAllUsersApi = async()=>{
+  try {
+    return await commonApi('GET', `${serverUrl}/all_users`)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+//delete a user
+export const deleteAUsersApi = async(id)=>{
+  try {
+    return await commonApi('DELETE', `${serverUrl}/delete_user/${id}`)
     
   } catch (error) {
     return error

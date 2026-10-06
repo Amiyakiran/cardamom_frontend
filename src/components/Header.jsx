@@ -9,7 +9,7 @@ import { logoutApi } from '../services/allApi'
 import {googleLogout } from '@react-oauth/google';
 
 function Header({ activePage = '' }) {
-  const { user, setUser } = useContext(AuthContext)
+  const { user, setUser, userId } = useContext(AuthContext)
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
 
@@ -27,22 +27,22 @@ function Header({ activePage = '' }) {
         <img className="site-brand-mark" src="/assets/leaf.png" alt="" />
         <span className="site-brand-copy">
           <strong>GREEN GOLD</strong>
-          <small>CARDAMOM</small>
+          <small>SPICES</small>
         </span>
       </Link>
 
       <nav className="site-nav" aria-label="Main navigation">
-        <Link className={activePage === 'home' ? 'active' : ''} to="/">Home</Link>
-        <Link className={activePage === 'about' ? 'active' : ''} to="/about">About Us</Link>
-        <Link className={activePage === 'blog' ? 'active' : ''} to="/blog">Blog</Link>
-        <Link className={activePage === 'contact' ? 'active' : ''} to="/contact">Contact</Link>
+        <Link className={activePage === 'home' ? 'active' : ''} to="/">HOME</Link>
+        <Link className={activePage === 'about' ? 'active' : ''} to="/about">ABOUT US</Link>
+        <Link className={activePage === 'blog' ? 'active' : ''} to="/blog">BLOG</Link>
+        <Link className={activePage === 'contact' ? 'active' : ''} to="/contact">CONTACT</Link>
       </nav>
 
       <div className="site-tools">
         {user === "" ? (
           <Link className="site-login" to="/login">
             <FontAwesomeIcon icon={faUser} aria-hidden="true" />
-            <span>Login</span>
+            <span>LOGIN</span>
           </Link>
         ) : (
           <div className="account-menu">
@@ -54,14 +54,14 @@ function Header({ activePage = '' }) {
               onClick={() => setMenuOpen((open) => !open)}
             >
               <FontAwesomeIcon icon={faUser} aria-hidden="true" />
-              <span>{user}</span>
+              <span>{user.charAt(0).toUpperCase() + user.slice(1)}</span>
               <FontAwesomeIcon className="account-chevron" icon={faChevronDown} aria-hidden="true" />
             </button>
 
             {menuOpen && (
               <div className="account-dropdown" role="menu">
-                <Link to="/profile" role="menuitem" onClick={() => setMenuOpen(false)}>
-                <FontAwesomeIcon icon={faAddressCard} />
+                <Link to={`/${user}-profile/${userId}`} role="menuitem" onClick={() => setMenuOpen(false)}>
+                  <FontAwesomeIcon icon={faAddressCard} />
                   Profile
                 </Link>
                 <button type="button" role="menuitem" onClick={handleLogout}>

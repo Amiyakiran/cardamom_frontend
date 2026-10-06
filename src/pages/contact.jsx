@@ -97,9 +97,9 @@ export default function Contact() {
   return (
     <div className="contact-page">
       <section className="contact-hero">
-        <video className="contact-hero-video" autoPlay muted loop playsInline aria-hidden="true">
+        {/* <video className="contact-hero-video" autoPlay muted loop playsInline aria-hidden="true">
           <source src="/assets/video1.mp4" type="video/mp4" />
-        </video>
+        </video> */}
         <div className="contact-hero-overlay" />
         <Header activePage="contact" />
         <div className="contact-hero-copy">

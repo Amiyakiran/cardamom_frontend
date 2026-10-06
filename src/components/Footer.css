@@ -1,12 +1,20 @@
 .site-footer {
   position: relative;
   z-index: 2;
-  background: #07120ac2;
+  background: rgba(0, 16, 2, 0.838);
+  
   color: #d5d7c8;
-  font-family: var(--font-body);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-top: 60px;
 }
-
+.site-footer1 {
+  position: relative;
+  z-index: 2;
+  background:transparent;
+  color: #d5d7c8;
+ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-top: 60px;
+}
 .site-footer-points {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -21,7 +29,8 @@
   gap: 20px;
   min-height: 48px;
   padding: 0 34px;
-  border-right: 1px solid rgba(197, 183, 84, .3);
+  border-right: 2px solid rgba(197, 184, 84, 0.462);
+  
 }
 
 .site-footer-point:first-child {

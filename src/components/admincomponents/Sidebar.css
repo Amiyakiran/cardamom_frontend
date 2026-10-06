@@ -59,7 +59,8 @@
     position: relative;
     flex: 0 0 245px;
     color: #f4faf7;
-    background: linear-gradient(145deg, #003a2b 0%, #002d22 62%, #001f19 100%);
+    /* background: linear-gradient(145deg, #003a2b 0%, #002d22 62%, #001f19 100%); */
+    background-image: linear-gradient(to top, black ,  #003a2b);
     font-family: "Manrope", sans-serif;
 }
 

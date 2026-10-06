@@ -20,7 +20,7 @@ const navigationItems = [
   { label: 'Customers', path: '/admin/customers', icon: faUsers},
   { label: 'Blog', path: '/admin/blog', icon: faFileLines },
   { label: 'Reports', path: '/admin/reports', icon: faChartColumn },
-  { label: 'Coupons', path: '/admin/coupons', icon: faTag },
+  // { label: 'Coupons', path: '/admin/coupons', icon: faTag },
   { label: 'Settings', path: '/admin/settings', icon: faGear },
 ]
 
@@ -38,7 +38,7 @@ function Sidebar({ activeItem = 'Blog', onNavigate }) {
         <img className="site-brand-mark" src="/assets/leaf.png" alt="" />
         <span className="site-brand-copy">
           <strong>GREEN GOLD</strong>
-          <small>CARDAMOM</small>
+          <small>SPICES</small>
         </span>
       </Link>
 

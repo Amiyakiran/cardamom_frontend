@@ -3,7 +3,7 @@
     --panel: #2a4d38;
     --muted: #fafbfa;
     --accent-start: #eab30e;
-    --accent-end: #6b8b2a;
+    --accent-end: #a8c56e;
     --glass: rgba(255, 255, 255, 0.03);
     
 }
@@ -22,18 +22,10 @@ html,
     position: relative;
     min-height: 100vh;
     overflow-x: hidden;
-    /* background: #07120a; */
-}
-
-.bg-video {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-    /* filter: brightness(0.7) saturate(0.8); */
-    /* transition: opacity 1.2s ease-in-out; */
+    background-image: url(/assets/bglogin1.png);
+    background-size: cover;
+    background-position: bottom;
+    background-repeat: no-repeat;
 }
 
 
@@ -41,7 +33,7 @@ html,
 .video-overlay {
     position: absolute;
     inset: 0;
-    /* background: rgba(7, 18, 10, 0.121); */
+     background: linear-gradient(90deg, rgba(4, 15, 7, .86), rgba(5, 18, 9, .42) 54%, rgba(5, 16, 8, .08));
     z-index: 1;
 }
 
@@ -50,7 +42,7 @@ html,
     z-index: 2;
     display: flex;
     min-height: calc(100vh - 145px);
-    color: #dbe6c8;
+    color: #dbe6c826;
     font-family: var(--font-display);
 }
 
@@ -95,16 +87,18 @@ html,
     margin-bottom: 6px
 }
 .brand-title {
-    font-size: 34px;
+    font-size: 54px;
     margin: 0;
     color: #fff;
     letter-spacing: 2px
+
 }
 
 .brand-sub {
-    color: var(--accent-start);
+   color: #d5c278;
     margin: 6px 0;
-    font-family: inherit;
+    font-family: var(--font-display);
+    font-size: 25px;
 
 }
 .brand-sub::before {
@@ -142,23 +136,29 @@ html,
 }
 
 .promo-line {
-    font-family: inherit;
+    font-family: var(--font-body);
+    font-size: 11px;
+     letter-spacing: .28em;
+     color: #d5c278;
+     margin-top: 15px;
 }
 
-.promo h1 {
-    color: var(--accent-start);
-    font-size: clamp(2.2rem, 4vw, 3.1rem);
-    line-height: 1.08;
-    margin: 10px auto 0;
-    font-weight: 400;
+.promo h4 {
+    color: rgba(255, 255, 255, 0.927);
+    font-size: clamp(2rem, 3vw, 3rem);
+    line-height: 1;
+    /* margin: 10px auto 0; */
+    margin-top: 20px;
+    font-weight: 600;
     max-width: 440px;
     word-break: break-word;
     overflow-wrap: anywhere;
+   
 }
 .promo-hr{
     width: 100px;
     height: 2px;
-    background: rgba(255, 166, 0, 0.333);
+    background:var(--accent-end); ;
     margin: 20px auto;
 }
 .right-panel {
@@ -171,11 +171,16 @@ html,
 
 .card {
     width: 420px;
-    background: linear-gradient(180deg, rgba(8, 18, 10, 0.642), rgba(5, 10, 5, 0.912));
-    border: 1px solid rgba(140, 170, 100, 0.325);
+    /* background: rgba(255, 255, 255, 0.06); */
+    /* background: transparent; */
+    backdrop-filter: blur(2px);
+    /* -webkit-backdrop-filter: blur(8px); */
+    border: 1px solid rgba(249, 246, 246, 0.482) !important;
     padding: 34px;
     border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+ /* background-color: #07120a; */
+    /* background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); */
 }
 .card-head {
     display: flex;
@@ -186,10 +191,11 @@ html,
 
 
 .welcome {
-    color: var(--accent-start);
-    letter-spacing: 2px;
+    color: #d5c278;
+    letter-spacing: .28em;
     font-size: 12px;
     text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 .card-head .logo{
     text-align: center;
@@ -210,7 +216,7 @@ html,
 .title {
     margin-top: 6px;
     margin-bottom: 18px;
-    font-weight: 600;
+    /* font-weight: 600; */
     color: #e9f1dc;
     text-align: center;
 }
@@ -226,11 +232,13 @@ html,
 .input-group {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.681);
     padding: 10px;
     border-radius: 8px;
-    margin-bottom: 12px
+    margin-bottom: 12px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .input-group .icon {
@@ -248,7 +256,9 @@ html,
     color: #dfe9c9;
     padding: 6px
 }
-
+input::placeholder {
+  color: #999;
+}
 .input-group .eye {
     background: transparent;
     border: 0;
@@ -284,14 +294,14 @@ html,
     width: 100%;
     padding: 12px 16px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.441) !important;
     cursor: pointer;
     margin-top: 8px
 }
 
 .btn.primary {
-    background: linear-gradient(90deg, var(--accent-end), rgb(196, 246, 59));
-    color: #0b1a0b;
+    background: linear-gradient(90deg, var(--accent-end), rgb(73, 92, 20));
+    color: white;
     font-weight: 700;
     box-shadow: 0 6px 18px rgba(80, 120, 40, 0.12)
 }
@@ -306,7 +316,7 @@ html,
 .divider {
     margin: 14px 0;
     text-align: center;
-    color: rgba(220, 230, 200, 0.25)
+    color: rgba(220, 230, 200, 0.562)
 }
 
 .register {

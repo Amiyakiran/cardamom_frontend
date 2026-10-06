@@ -17,6 +17,7 @@
     color: var(--contact-ink);
     background: var(--contact-paper);
     font-family: var(--font-body);
+    background-color: #fffdf4;
 }
 
 .contact-hero {
@@ -24,6 +25,8 @@
     position: relative;
     overflow: hidden;
     color: #fffdf4;
+    background-image: url('/assets/contactbg.png');
+    background-position: bottom;
 }
 
 .contact-hero-video {
