@@ -173,7 +173,7 @@ export const deleteFromCartApi = async (id, body) => {
 
 export const incrementProductCountApi = async (id, body) => {
   try {
-    return await commonApi('POST', `${serverUrl}/increment-count/${id}`, body)
+    return await commonApi('PUT', `${serverUrl}/increment-count/${id}`, body)
 
   } catch (error) {
     return error
@@ -184,7 +184,7 @@ export const incrementProductCountApi = async (id, body) => {
 
 export const decrementProductCountApi = async (id, body) => {
   try {
-    return await commonApi('POST', `${serverUrl}/decrement-count/${id}`, body)
+    return await commonApi('PUT', `${serverUrl}/decrement-count/${id}`, body)
 
   } catch (error) {
     return error
@@ -195,7 +195,7 @@ export const decrementProductCountApi = async (id, body) => {
 
 export const updateProductQuantityApi = async (id, body) => {
   try {
-    return await commonApi('POST', `${serverUrl}/update-quantity/${id}`, body)
+    return await commonApi('PUT', `${serverUrl}/update-quantity/${id}`, body)
 
   } catch (error) {
     return error
@@ -206,15 +206,32 @@ export const updateProductQuantityApi = async (id, body) => {
 
 export const updateProfileImageApi = async (id, body, header) => {
   try {
-    return await commonApi('POST', `${serverUrl}/update-profile-image/${id}`, body, header)
+    return await commonApi('PUT', `${serverUrl}/update-profile-image/${id}`, body, header)
 
   } catch (error) {
     return error
   }
 }
 
+//update the Address
+export const UpdateAdressApi = async(id, body)=>{
+   try {
+    return await commonApi('PUT', `${serverUrl}/update-address/${id}`, body)
 
+  } catch (error) {
+    return error
+  }
+}
 
+//delete the Address
+export const deleteAddressApi = async(id, body)=>{
+   try {
+    return await commonApi('DELETE', `${serverUrl}/delete_address/${id}`, body)
+
+  } catch (error) {
+    return error
+  }
+}
 
 
 

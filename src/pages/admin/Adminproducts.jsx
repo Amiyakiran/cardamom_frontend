@@ -20,6 +20,7 @@ function StatCard({ icon, label, value, detail, tone = 'green' }) {
 
 function Adminproducts() {
     const [search, setSearch] = useState('')
+    const [currentPage, setCurrentPage] = useState(1)
 
     const [productDetails, setProductDetails] = useState({
         title: "", image: "", varient: "", description: "", stock: "", price: "", date: ""
@@ -144,8 +145,21 @@ function Adminproducts() {
             matchesStockFilter(item.stock)
         )
 
+        setCurrentPage(1)
         setAllProducts((current) => ({ ...current, allProductArray: filteredProducts }))
     }
+
+    const productsPerPage = 3
+    const pageCount = Math.ceil(allproducts.allProductArray.length / productsPerPage)
+    const displayedPage = Math.min(currentPage, Math.max(1, pageCount))
+    const paginatedProducts = allproducts.allProductArray.slice(
+        (displayedPage - 1) * productsPerPage,
+        displayedPage * productsPerPage
+    )
+
+    useEffect(() => {
+        setCurrentPage((page) => Math.min(page, Math.max(1, pageCount)))
+    }, [pageCount])
 
     console.log(editProduct);
 
@@ -227,7 +241,10 @@ function Adminproducts() {
                                 <div className="blog-filter-row">
                                     <label>
                                         <FontAwesomeIcon icon={faMagnifyingGlass} />
-                                        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by product name" />
+                                        <input value={search} onChange={(event) => {
+                                            setSearch(event.target.value)
+                                            setCurrentPage(1)
+                                        }} placeholder="Search by product name" />
                                     </label>
                                     <select name='varient' value={filter.Fvarient} onChange={(event) => {
                                         const nextFilter = { ...filter, Fvarient: event.target.value }
@@ -268,8 +285,8 @@ function Adminproducts() {
                                         </thead>
                                         <tbody>
 
-                                            {allproducts.allProductArray.map((item, index) => (
-                                                <tr key={index}>
+                                            {paginatedProducts.map((item, index) => (
+                                                <tr key={item._id || index}>
 
                                                     <td>
                                                         <img src={`${serverUrl}/uploads/${item.image}`} alt="" />
@@ -308,6 +325,27 @@ function Adminproducts() {
                                         </tbody>
                                     </table>
                                 </div>
+                                {pageCount > 1 && (
+                                    <nav className="admin-products-pagination" aria-label="Product pages">
+                                        <button type="button" onClick={() => setCurrentPage(displayedPage - 1)} disabled={displayedPage === 1}>
+                                            Previous
+                                        </button>
+                                        {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
+                                            <button
+                                                type="button"
+                                                key={pageNumber}
+                                                onClick={() => setCurrentPage(pageNumber)}
+                                                aria-label={`Product page ${pageNumber}`}
+                                                aria-current={pageNumber === displayedPage ? 'page' : undefined}
+                                            >
+                                                {pageNumber}
+                                            </button>
+                                        ))}
+                                        <button type="button" onClick={() => setCurrentPage(displayedPage + 1)} disabled={displayedPage === pageCount}>
+                                            Next
+                                        </button>
+                                    </nav>
+                                )}
 
                             </section>
 
@@ -315,7 +353,7 @@ function Adminproducts() {
 
                             <div>
 
-                                <div className="blog-form-title" style={{width:'100%', margin:'5px 0'}}>
+                                <div className="blog-form-title" style={{width:'100%', margin:'20px 0'}}>
                                     <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', fontSize:'10px',width:'100%',  color:' #bfbfbf'}}>
                                         <label >Default Stock Threshold</label>
                                         <input
@@ -335,11 +373,11 @@ function Adminproducts() {
                                     </div>
                                 </div>
 
-                                <section className="admin-blog-form-panel">
+                                <section className="admin-blog-form-panel" style={{marginTop:'20px'}}>
 
 
 
-                                    <div className="blog-form-title">
+                                    <div className="blog-form-title" >
                                         <div>
                                             <h2><FontAwesomeIcon icon={faFileLines} /> Add New Product</h2>
                                             <p>Fill in the details below to create a new product to the list.</p>

@@ -779,8 +779,8 @@
         margin-right: 0;
         min-height: 98px;
         padding: 11px 10px;
-        background-position: center, 70% center;
-        background-size: cover, auto 100%;
+        background-position: center, center center;
+        background-size: cover, 100% auto;
     }
 
     .admin-blog-heading p {

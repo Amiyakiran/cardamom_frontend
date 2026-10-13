@@ -829,4 +829,23 @@ td small{
   color: rgba(128, 128, 128, 0.571);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
  }
+.addressLabel{
+  padding: 8px;
+  border: 1px solid rgba(128, 128, 128, 0.212) ;
+  margin-top: 5px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+} 
 
+
+
+.addressLabel span{
+  font-size: 11px !important;
+    color: rgba(128, 128, 128, 0.571) !important;
+
+}
+#address-pincode-error, #address-mobileno-error{
+  font-size: 9px;
+}

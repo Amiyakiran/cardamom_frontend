@@ -37,7 +37,7 @@ function Sidebar({ activeItem = 'Blog', onNavigate }) {
   return (
     <>
       <button
-        className="admin-sidebar-toggle"
+        className={`admin-sidebar-toggle${isOpen ? ' is-open' : ''}`}
         type="button"
         aria-label={isOpen ? 'Close admin navigation' : 'Open admin navigation'}
         aria-expanded={isOpen}

@@ -122,7 +122,7 @@ function Admincustomers() {
                                                   <span>{user.email}</span>
                                                     {/* <span className={`blog-category ${post.category.toLowerCase().replaceAll(' ', '-')}`}>{post.category}</span> */}
                                                 </td>
-                                                <td>Nil</td>
+                                                <td>{user.address.map((item)=>item.mobileno)}</td>
                                               
                                                 <td>0</td>
                                                   <td><span className="blog-tags" style={{backgroundColor:'green', color:'white'}}>Active</span>
@@ -152,66 +152,7 @@ function Admincustomers() {
                             {/* <div className="blog-table-footer">Showing 1 to {filteredPosts.length} of {posts.length} entries <span><button type="button">‹</button><b>1</b><button type="button">2</button><button type="button">3</button><button type="button">›</button></span></div> */}
                         </section>
 
-                        {/* <section className="admin-blog-form-panel"><div className="blog-form-title">
-                            <div>
-                                <h2><FontAwesomeIcon icon={faFileLines} /> Add New Blog</h2>
-                                <p>Fill in the details below to create a new blog post.</p></div>
-                            <button type="button" onClick={() => setForm(emptyForm)} aria-label="Clear form"><FontAwesomeIcon icon={faXmark} /></button>
-                        </div>
-                            <form className="admin-blog-form" onSubmit={saveBlog}>
-                                <label>Blog Title <em>*</em>
-                                    <input name="title" value={form.title} onChange={updateForm} placeholder="Enter blog title" required />
-                                </label>
-                                <label>Featured Image <em>*</em>
-                                    <div className="blog-upload">
-                                        <input name='uploadImage' type="file" id='imageUpload' onChange={updateForm} />
-                                        <FontAwesomeIcon icon={faCloudArrowUp} />
-                                        {form.image == "" ? <span>Click to upload or drag and drop</span>
-                                            : <span>{form.image.name}</span>}
-                                        <small>PNG, JPG (Max 2MB)</small>
-                                    </div>
-                                </label>
-
-                                <div className="blog-form-row">
-                                    <label>Category <em>*</em>
-                                        <select name="category" value={form.category} onChange={updateForm}>
-                                            <option value="">Select category</option><option>Recipes</option><option>Farming</option><option>Health & Wellness</option><option>Buying Guide</option></select></label><label>Status <em>*</em><select name="status" value={form.status} onChange={updateForm}><option>Draft</option><option>Published</option><option>Scheduled</option>
-                                            </select>
-                                    </label>
-                                </div>
-                                <label>Short Description <em>*</em>
-                                    <textarea name="shortDescription" value={form.shortDescription} onChange={updateForm} placeholder="Enter a short description (e.g., 1–2 lines)" rows="2" />
-                                </label>
-                                <label>Content Editor <em>*</em>
-                                    <div className="blog-editor">
-                                        <div><FontAwesomeIcon icon={faBold} /><FontAwesomeIcon icon={faItalic} /><FontAwesomeIcon icon={faUnderline} /><FontAwesomeIcon icon={faList} /><FontAwesomeIcon icon={faAlignLeft} /><FontAwesomeIcon icon={faImage} /><FontAwesomeIcon icon={faLink} /><FontAwesomeIcon icon={faChevronDown} /></div>
-                                        <textarea name='longDescription' value={form.longDescription} placeholder="Write your blog content here..." rows="5" onChange={updateForm} />
-                                    </div>
-                                </label>
-
-                                <div className="blog-form-row">
-                                    <label>Author <em>*</em>
-                                        <input name="author" value={form.author} onChange={updateForm} placeholder='Author Name' />
-
-                                    </label>
-                                    <label>Tags<input name="tags" value={form.tags} onChange={updateForm} placeholder="Add tags (comma separated)" />
-                                    </label>
-                                </div>
-                                <div className="blog-form-row">
-                                    <label>SEO Title <em>*</em>
-                                        <input name="seoTitle" value={form.seoTitle} onChange={updateForm} placeholder="Enter SEO title" />
-                                    </label>
-                                    <label>Publish Date <em>*</em>
-                                        <span className="blog-date-input">
-                                            <input type='date' name="publishDate" value={form.publishDate} onChange={updateForm} placeholder="dd/mm/yyyy" />
-                                        </span>
-                                    </label>
-
-                                </div>
-
-                                <div className="blog-form-actions"><button type="button" onClick={() => setForm(emptyForm)}>Cancel</button>
-                                    <button className="blog-primary-button" type="submit">Save</button></div>{notice && <p className="blog-notice" role="status">{notice}</p>}
-                            </form></section> */}
+                        
                     </div>
                 </section>
             </main>

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faPenToSquare, faBagShopping, faBoxOpen, faCreditCard, faEnvelope, faHeart, faLocationDot, faTrashCan, faShoppingBag, faMinus } from '@fortawesome/free-solid-svg-icons'
 import Header from '../components/Header'
 import { AuthContext } from '../context/ContextShare'
-import { addToCartApi, decrementProductCountApi, deleteFromCartApi, deleteFromWishlistApi, getAllCartItemApi, getAllWishlistProductApi, getMeApi, incrementProductCountApi, updateProductQuantityApi, updateProfileImageApi } from '../services/allApi'
+import { addToCartApi, decrementProductCountApi, deleteAddressApi, deleteFromCartApi, deleteFromWishlistApi, getAllCartItemApi, getAllWishlistProductApi, getMeApi, incrementProductCountApi, UpdateAdressApi, updateProductQuantityApi, updateProfileImageApi } from '../services/allApi'
 import './Profile.css'
 import Footer from '../components/Footer'
 import { serverUrl } from '../services/serverUrl'
@@ -15,6 +15,8 @@ import Modal from 'react-bootstrap/Modal';
 
 
 export default function Profile() {
+
+  //states
   const { user, loading, userId } = useContext(AuthContext)
   const [profile, setProfile] = useState(null)
   const [profileLoading, setProfileLoading] = useState(true)
@@ -23,6 +25,8 @@ export default function Profile() {
   const [cartArray, setCartArray] = useState([])
   const [deleteStatus, setDeleteStatus] = useState(false)
   const [show, setShow] = useState(false);
+  const [addressSaving, setAddressSaving] = useState(false)
+  const [addressValidationVisible, setAddressValidationVisible] = useState({})
   const [address, setAddress] = useState({
     fullname: "",
     mobileno: "",
@@ -34,34 +38,39 @@ export default function Profile() {
     pincode: ""
   })
 
-  const handleClose = () => setShow(false);
+  //console.log(profile);
+  console.log(address);
+
+
+  //functions
+  const handleClose = () => {
+    if (addressSaving) return
+    setShow(false)
+    setAddress({
+      fullname: "",
+      mobileno: "",
+      flat: "",
+      street: "",
+      landmark: "",
+      city: "",
+      state: "",
+      pincode: ""
+    })
+    setAddressValidationVisible({})
+  };
   const handleShow = () => setShow(true);
-
- // console.log(profile);
- console.log(address);
- 
-
-
-  useEffect(() => {
-    if (loading) return undefined
-    if (!user) {
-      setProfile(null)
-      setProfileLoading(false)
-      return undefined
-    }
-
-    let isCurrent = true
-    const loadProfile = async () => {
-      const result = await getMeApi()
-      if (!isCurrent) return
-      setProfile(result?.status === 200 && result.data?.user ? result.data.user : { name: user, email: '' })
-      setProfileLoading(false)
-    }
-
-    loadProfile()
-    return () => { isCurrent = false }
-  }, [loading, user])
-
+  const showAddressValidation = (event) => {
+    const { name } = event.target
+    setAddressValidationVisible((current) => ({ ...current, [name]: true }))
+  }
+  const handleAddressChange = (event) => {
+    const { name, value } = event.target
+    const digitLimits = { mobileno: 10, pincode: 6 }
+    const nextValue = name in digitLimits
+      ? value.replace(/\D/g, '').slice(0, digitLimits[name])
+      : value
+    setAddress((currentAddress) => ({ ...currentAddress, [name]: nextValue }))
+  }
   const displayName = profile?.name || user
   const initials = displayName
     ? displayName.split(' ').filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase()
@@ -86,7 +95,7 @@ export default function Profile() {
 
   }
 
-  console.log(wishlistArray);
+  // console.log(wishlistArray);
 
   //function to get all cart product
   const getAllCartItem = async () => {
@@ -95,7 +104,7 @@ export default function Profile() {
     setCartArray(result.data.allcartProduct)
 
   }
-  console.log(cartArray);
+  // console.log(cartArray);
 
   //function to delete from wishlist
   const deleteItemFromWishlist = async (productid) => {
@@ -203,12 +212,85 @@ export default function Profile() {
 
   }
 
+  //update Address
+  const updateAddress = async (event) => {
+    event.preventDefault()
+    setAddressSaving(true)
+    try {
+      const result = await UpdateAdressApi(userId, address)
+      if (result.status >= 200 && result.status < 300) {
+        toast.success(result.data.message)
+        setProfile((currentProfile) => ({
+          ...currentProfile,
+          address: [...(currentProfile?.address ?? []), address]
+        }))
+        setShow(false)
+        setAddress({
+          fullname: "",
+          mobileno: "",
+          flat: "",
+          street: "",
+          landmark: "",
+          city: "",
+          state: "",
+          pincode: ""
+        })
+      } else {
+        toast.error('Something went wrong')
+      }
+    } catch {
+      toast.error('Something went wrong')
+    } finally {
+      setAddressSaving(false)
+    }
+
+  }
+
+  //delete address
+  const deleteAddress = async (index) => {
+    try {
+      const result = await deleteAddressApi(userId, { index })
+      if (result?.status === 200) {
+        setProfile((currentProfile) => currentProfile ? {
+          ...currentProfile,
+          address: (currentProfile.address ?? []).filter((_, addressIndex) => addressIndex !== index)
+        } : currentProfile)
+      } else {
+        toast.error('Something went wrong')
+      }
+    } catch {
+      toast.error('Something went wrong')
+    }
+  }
+
+  //useEffects
+
+  useEffect(() => {
+    if (loading) return undefined
+    if (!user) {
+      setProfile(null)
+      setProfileLoading(false)
+      return undefined
+    }
+
+    let isCurrent = true
+    const loadProfile = async () => {
+      const result = await getMeApi()
+      if (!isCurrent) return
+      setProfile(result?.status === 200 && result.data?.user ? result.data.user : { name: user, email: '' })
+      setProfileLoading(false)
+    }
+
+    loadProfile()
+    return () => { isCurrent = false }
+  }, [loading, user])
+
   useEffect(() => {
     if (userId) {
       getWishlist()
       getAllCartItem()
     }
-  }, [deleteStatus])
+  }, [deleteStatus, userId])
 
 
 
@@ -235,18 +317,9 @@ export default function Profile() {
                 <h2>PROFILE</h2>
                 <h1>Everything you need, <br /> all in one place.</h1>
                 <p style={{ marginTop: '15px', color: '#6b675c', }}>Make it uniquely yours.</p>
-                {/* <div className="profile-avatar" aria-label={`Avatar for ${displayName}`}>{initials}</div>
-                {/* <h2>{displayName.charAt(0).toUpperCase() + displayName.slice(1)}</h2> */}
-                {/* <p>{profile.email || 'Green Gold member'}</p>
-                <p style={{ fontSize: '11px', color: '#e4c778' }}>{userId}</p>  */}
+
               </div>
-              {/* <nav className="profile-menu">
-                <a className="is-active" href="#account"><FontAwesomeIcon icon={faUser} />My Profile</a>
-                <a href="#orders"><FontAwesomeIcon icon={faBoxOpen} />My Orders</a>
-                <Link to="/all-products"><FontAwesomeIcon icon={faBagShopping} />Shop Spices</Link>
-                <a href="#payments"><FontAwesomeIcon icon={faCreditCard} />Payment Methods</a>
-                <a href="#addresses"><FontAwesomeIcon icon={faLocationDot} />Addresses</a>
-              </nav> */}
+
               <div className="profile-sidebar-note">
                 <p>Good food begins<br />with great spices.</p>
               </div>
@@ -379,14 +452,14 @@ export default function Profile() {
 
                       </tbody>
                     </table>
-                    <div className='mb-4'>
+                    <div className='mb-4  total'>
                       <p>Total Number of Item :  {cartArray.length}</p>
                       <p>Items Price:   ₹ {cartArray.map((item) => item.total).reduce((p1, p2) => p1 + p2)} </p>
                       <p>Delivery Charge:   ₹ 60</p>
-                      <h5>Grand Total :   ₹ {cartArray.map((item) => item.total).reduce((p1, p2) => p1 + p2) + 60}</h5>
+                      <h5 style={{fontFamily:'var(--font-display)'}}>Grand Total :   <span style={{fontFamily:'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'}}>₹ {cartArray.map((item) => item.total).reduce((p1, p2) => p1 + p2) + 60}</span></h5>
                     </div>
                   </div>}
-                <Link className="profile-primary-link" >Make payment <FontAwesomeIcon icon={faArrowRight} aria-hidden="true" /></Link>
+                <Link className="profile-primary-link" >Place the Order<FontAwesomeIcon icon={faArrowRight} aria-hidden="true" /></Link>
               </section>
 
               <section className="profile-card profile-info-card" id="orders">
@@ -415,10 +488,24 @@ export default function Profile() {
                 </div>
               </section>
               <section className="profile-card profile-info-card" id="addresses">
-                <div className="profile-card-heading"><h2>Shipping Address</h2><FontAwesomeIcon icon={faLocationDot} aria-hidden="true" /></div>
-                {profile.address.length ==0  ? <p className="profile-empty-copy">No delivery address saved yet. Your address can be added when you place an order.</p> :
+                <div className="profile-card-heading mb-4"><h2>Shipping Address</h2><FontAwesomeIcon icon={faLocationDot} aria-hidden="true" /></div>
+                {profile.address.length == 0 ? <p className="profile-empty-copy">No delivery address saved yet. Your address can be added when you place an order.</p> :
                   <div>
-                    
+                    {profile.address.map((add, index) => (
+                     
+                        <div className='addressLabel' key={index}>
+                         
+                          <input type="radio" id='addressInput' />
+                          <label className='ms-4' htmlFor="addressInput">
+                            <span style={{ fontWeight: 600 }}>{add.fullname}</span> <br />
+                            <span>{add.flat}, {add.landmark}, {add.street}, {add.city}, {add.state}, PIN: {add.pincode} </span> <br />
+                            <span>{add.mobileno}</span>
+  
+                          </label>
+                            <FontAwesomeIcon icon={faTrashCan} className='text-danger' onClick={()=>deleteAddress(index)}/>
+                        </div>
+                     
+                    ))}
                   </div>
                 }
 
@@ -461,41 +548,51 @@ export default function Profile() {
           <Modal.Title className='Modaltitle'>Add New Address</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form action="" className='form px-4 py-3'>
+          <form id="address-form" className='form px-4 py-3' onSubmit={updateAddress}>
 
             <div className='mt-1'>
-              <input type="text" className='form-control rounded-0' placeholder='Full Name' value={address.fullname} onChange={(e)=>setAddress({...address, fullname:e.target.value})} />
+              <label className="visually-hidden" htmlFor="address-fullname">Full Name</label>
+              <input id="address-fullname" name="fullname" type="text" className='form-control rounded-0' placeholder='Full Name' value={address.fullname} onChange={handleAddressChange} required />
             </div>
             <div className='mt-3'>
-              <input type="text" className='form-control rounded-0' placeholder='mobile Number' value={address.mobileno} onChange={(e)=>setAddress({...address, mobileno:e.target.value})} />
+              <label className="visually-hidden" htmlFor="address-mobileno">Mobile Number</label>
+              <input id="address-mobileno" name="mobileno" type="tel" inputMode="numeric" maxLength={10} pattern="[0-9]{10}" title="Enter exactly 10 digits" aria-describedby="address-mobileno-error" aria-invalid={addressValidationVisible.mobileno && !/^\d{10}$/.test(address.mobileno)} className='form-control rounded-0' placeholder='Mobile Number' value={address.mobileno} onChange={handleAddressChange} onBlur={showAddressValidation} onInvalid={showAddressValidation} required />
+              {addressValidationVisible.mobileno && !/^\d{10}$/.test(address.mobileno) && <small id="address-mobileno-error" className="text-danger d-block mt-1">* Enter exactly 10 digits.</small>}
             </div>
             <div className='mt-3'>
-              <input type="text" className='form-control rounded-0' placeholder='Flat, House no, Building, Company, Apartment' value={address.flat} onChange={(e)=>setAddress({...address, flat:e.target.value})} />
+              <label className="visually-hidden" htmlFor="address-flat">Flat, house, or building</label>
+              <input id="address-flat" name="flat" type="text" className='form-control rounded-0' placeholder='Flat, House no, Building, Company, Apartment' value={address.flat} onChange={handleAddressChange} required />
             </div>
             <div className='mt-3'>
-              <input type="text" className='form-control rounded-0' placeholder='Area, Street, Sector, Village' value={address.street} onChange={(e)=>setAddress({...address, street:e.target.value})} />
+              <label className="visually-hidden" htmlFor="address-street">Area, street, sector, or village</label>
+              <input id="address-street" name="street" type="text" className='form-control rounded-0' placeholder='Area, Street, Sector, Village' value={address.street} onChange={handleAddressChange} required />
             </div>
             <div className='mt-3'>
-              <input type="text" className='form-control rounded-0' placeholder='Landmark' value={address.landmark} onChange={(e)=>setAddress({...address, landmark:e.target.value})} />
+              <label className="visually-hidden" htmlFor="address-landmark">Landmark</label>
+              <input id="address-landmark" name="landmark" type="text" className='form-control rounded-0' placeholder='Landmark' value={address.landmark} onChange={handleAddressChange} />
             </div>
             <div className='mt-3'>
-              <input type="text" className='form-control rounded-0' placeholder='Town/City' value={address.city} onChange={(e)=>setAddress({...address, city:e.target.value})} />
+              <label className="visually-hidden" htmlFor="address-city">Town or city</label>
+              <input id="address-city" name="city" type="text" className='form-control rounded-0' placeholder='Town/City' value={address.city} onChange={handleAddressChange} required />
             </div>
             <div className='mt-3'>
-              <input type="text" className='form-control rounded-0' placeholder='State' value={address.state} onChange={(e)=>setAddress({...address, state:e.target.value})} />
+              <label className="visually-hidden" htmlFor="address-state">State</label>
+              <input id="address-state" name="state" type="text" className='form-control rounded-0' placeholder='State' value={address.state} onChange={handleAddressChange} required />
             </div>
             <div className='mt-3'>
-              <input type="text" className='form-control rounded-0' placeholder='Pincode' value={address.pincode} onChange={(e)=>setAddress({...address, pincode:e.target.value})} />
+              <label className="visually-hidden" htmlFor="address-pincode">Pincode</label>
+              <input id="address-pincode" name="pincode" type="text" inputMode="numeric" maxLength={6} pattern="[0-9]{6}" title="Enter exactly 6 digits" aria-describedby="address-pincode-error" aria-invalid={addressValidationVisible.pincode && !/^\d{6}$/.test(address.pincode)} className='form-control rounded-0' placeholder='Pincode' value={address.pincode} onChange={handleAddressChange} onBlur={showAddressValidation} onInvalid={showAddressValidation} required />
+              {addressValidationVisible.pincode && !/^\d{6}$/.test(address.pincode) && <small id="address-pincode-error" className="text-danger d-block mt-1">* Enter exactly 6 digits.</small>}
             </div>
 
           </form>
         </Modal.Body>
         <Modal.Footer className='d-flex'>
-          <button className='rounded-5 btn btn-outline-warning border-1 border-warning' style={{fontSize:'12px'}}  onClick={handleClose}>
+          <button className='rounded-5 btn btn-outline-warning border-1 border-warning' style={{ fontSize: '12px' }} onClick={handleClose}>
             Cancel
           </button>
-          <button style={{fontSize:'12px'}} className='rounded-5 btn btn-outline-success border-1 border-success' onClick={handleClose}>
-            Update
+          <button type="submit" form="address-form" disabled={addressSaving} style={{ fontSize: '12px' }} className='rounded-5 btn btn-outline-success border-1 border-success'>
+            {addressSaving ? 'Saving...' : 'Update'}
           </button>
         </Modal.Footer>
       </Modal>

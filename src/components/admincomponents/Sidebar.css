@@ -192,12 +192,12 @@
 
     .admin-sidebar-toggle {
         position: fixed;
-        top: 12px;
-        left: 12px;
+        top: 7px;
+        left: 8px;
         z-index: 42;
         display: grid;
-        width: 42px;
-        height: 42px;
+        width: 32px;
+        height: 32px;
         place-items: center;
         border: 1px solid rgba(255, 255, 255, .28);
         border-radius: 7px;
@@ -205,7 +205,12 @@
         background: #075b3d;
         box-shadow: 0 3px 12px rgba(0, 35, 24, .2);
         cursor: pointer;
-        font-size: 18px;
+        font-size: 14px;
+        transition: left .22s ease;
+    }
+
+    .admin-sidebar-toggle.is-open {
+        left: calc(min(280px, 86vw) - 40px);
     }
 
     .admin-sidebar-design {

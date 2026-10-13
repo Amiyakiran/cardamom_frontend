@@ -6,3 +6,37 @@
   color: #bfbfbf;   
   font-size: 10px !important;
 }
+
+.admin-products-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 18px 0 8px;
+}
+
+.admin-products-pagination button {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid rgba(23, 83, 63, .3);
+  border-radius: 4px;
+  color: #17533f;
+  background: transparent;
+  font: 11px var(--font-body);
+  cursor: pointer;
+  transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+}
+
+.admin-products-pagination button[aria-current='page'],
+.admin-products-pagination button:hover:not(:disabled) {
+  border-color: #17533f;
+  color: #fff;
+  background: #17533f;
+}
+
+.admin-products-pagination button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
