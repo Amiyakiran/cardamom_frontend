@@ -1,12 +1,40 @@
 import './about.css'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { useEffect, useRef } from 'react'
 
 
 
 export default function About() {
+  const storyCardsRef = useRef(null)
+
+  useEffect(() => {
+    const cards = storyCardsRef.current?.querySelectorAll('.about-story-step-info, .about-step-visual')
+
+    if (!cards?.length) return undefined
+
+    const observer = new IntersectionObserver((entries, currentObserver) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+          currentObserver.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.2 })
+
+    const delays = [0, 100, 200, 100, 200, 300]
+    const steps = storyCardsRef.current.querySelectorAll('.about-story-step')
+    cards.forEach((card) => {
+      const stepIndex = Array.from(steps).indexOf(card.closest('.about-story-step'))
+      card.style.transitionDelay = `${delays[stepIndex % delays.length]}ms`
+      observer.observe(card)
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <div className="about-page">
+    <div className="about-page" ref={storyCardsRef}>
       <Header activePage="about" />
 
       <main className="about-story-page">
@@ -14,16 +42,16 @@ export default function About() {
           <div className="overlay" />
           <div className="about-story-copy">
             <p className="about-story-kicker mini-title"><span>♧</span> OUR STORY <i/></p>
-            <h1>The Journey with <br/> Spices</h1>
-            <p>We Bring you the finest Spices, sourced from <br /> the lush green hills of kerala</p>
+            <h1>The Journey with <br className="about-mobile-break" /> Spices</h1>
+            <p>We Bring you the finest Spices, sourced from <br className="about-mobile-break" /> the lush green hills of kerala</p>
           </div>
 
         </section>
 
       </main>
-      <p className='about-story-kicker' style={{ marginTop: '100px', textAlign: 'center', marginLeft:'0px' }}>The Journey Continues</p>
-      <h1 style={{ marginTop: '100px', marginBottom: '100px', fontFamily: 'var(--font-display)', textAlign: 'center', margin: 0, fontSize: 'clamp(32px, 4vw, 48px)', lineHeight: '1', fontWeight: '700' }}>From farm  to Pack</h1>
-      <p style={{color: '#5c6d61',fontSize: '14px',lineHeight: '1.6', margin: '30px 0 50px 40px', maxWidth: '330px', textAlign: 'center' }}>Nature. Precision. Purity.</p>
+      <p className="about-story-kicker about-process-kicker">The Journey Continues</p>
+      <h1 className="about-process-title">From farm to Pack</h1>
+      <p className="about-process-description">Nature. Precision. Purity.</p>
       <div className="about-story-step" >
         <div className="about-story-step-info">
           <div className="about-step-number">1</div>

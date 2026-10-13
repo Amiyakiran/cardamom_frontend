@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBoxOpen,
+  faBars,
   faChartColumn,
   faChevronRight,
   faFileLines,
@@ -25,12 +27,34 @@ const navigationItems = [
 ]
 
 function Sidebar({ activeItem = 'Blog', onNavigate }) {
+  const [isOpen, setIsOpen] = useState(false)
+
   const handleNavigate = (label) => {
     onNavigate?.(label)
+    setIsOpen(false)
   }
 
   return (
-    <aside className="admin-sidebar-design">
+    <>
+      <button
+        className="admin-sidebar-toggle"
+        type="button"
+        aria-label={isOpen ? 'Close admin navigation' : 'Open admin navigation'}
+        aria-expanded={isOpen}
+        aria-controls="admin-navigation"
+        onClick={() => setIsOpen((open) => !open)}
+      >
+        <FontAwesomeIcon icon={faBars} aria-hidden="true" />
+      </button>
+      {isOpen && (
+        <button
+          className="admin-sidebar-backdrop"
+          type="button"
+          aria-label="Close admin navigation"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      <aside id="admin-navigation" className={`admin-sidebar-design${isOpen ? ' is-open' : ''}`}>
       {/* <div className="admin-sidebar-design__brand">
         <img src="/assets/logo.png" alt="Green Gold Cardamom" />
       </div> */}
@@ -62,7 +86,8 @@ function Sidebar({ activeItem = 'Blog', onNavigate }) {
         <FontAwesomeIcon icon={faLeaf} aria-hidden="true" />
         <div className="admin-sidebar-design__foliage" aria-hidden="true" />
       </div> */}
-    </aside>
+      </aside>
+    </>
   )
 }
 

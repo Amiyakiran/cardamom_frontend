@@ -1,19 +1,92 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faBagShopping, faHeart, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Header from '../components/Header'
-import { getAllProductApi } from '../services/allApi'
+import { addToCartApi, addToWishlistApi, deleteFromWishlistApi, getAllProductApi, getAllWishlistProductApi } from '../services/allApi'
 import { serverUrl } from '../services/serverUrl'
 import './Allproducts.css'
 import Footer from '../components/Footer'
+import { useContext } from 'react'
+import { AuthContext } from '../context/ContextShare'
+import { ToastContainer, toast } from 'react-toastify';
 
+const PRODUCTS_PER_PAGE = 4
 
+const getBestSellerId = (variantProducts) => {
+  const bestSeller = variantProducts.reduce((currentBest, product) => {
+    const orderCount = Number(product.noOfOrders)
+
+    if (Number(product.stock) <= 0 || !Number.isFinite(orderCount) || orderCount <= 0) {
+      return currentBest
+    }
+
+    return !currentBest || orderCount > Number(currentBest.noOfOrders) ? product : currentBest
+  }, null)
+
+  return bestSeller ? bestSeller._id || bestSeller.title : null
+}
+
+function ProductPagination({ page, pageCount, onPageChange, label }) {
+  if (pageCount <= 1) return null
+
+  return (
+    <nav className="products-pagination" aria-label={`${label} product pages`}>
+      <button type="button" onClick={() => onPageChange(page - 1)} disabled={page === 1}>
+        Previous
+      </button>
+      {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
+        <button
+          type="button"
+          key={pageNumber}
+          onClick={() => onPageChange(pageNumber)}
+          aria-label={`${label} page ${pageNumber}`}
+          aria-current={pageNumber === page ? 'page' : undefined}
+        >
+          {pageNumber}
+        </button>
+      ))}
+      <button type="button" onClick={() => onPageChange(page + 1)} disabled={page === pageCount}>
+        Next
+      </button>
+    </nav>
+  )
+}
 
 function Allproducts() {
+  const productsContentRef = useRef(null)
   const [products, setProducts] = useState([])
   const [search, setSearch] = useState('')
+  const [categoryPages, setCategoryPages] = useState({ elite: 1, premium: 1, classic: 1 })
   const [favorites, setFavorites] = useState([])
+  const [pendingFavorites, setPendingFavorites] = useState(() => new Set())
   const [bagCount, setBagCount] = useState(0)
+  const { userId } = useContext(AuthContext)
+  const eliteProducts = products.filter((item) => item.varient === 'Elite (1st quality)')
+  const premiumProducts = products.filter((item) => item.varient === 'Premium (2nd quality)')
+  const classicProducts = products.filter((item) => item.varient === 'Classic (3rd quality)')
+  const elitePageCount = Math.ceil(eliteProducts.length / PRODUCTS_PER_PAGE)
+  const premiumPageCount = Math.ceil(premiumProducts.length / PRODUCTS_PER_PAGE)
+  const classicPageCount = Math.ceil(classicProducts.length / PRODUCTS_PER_PAGE)
+  const paginatedEliteProducts = eliteProducts.slice(
+    (categoryPages.elite - 1) * PRODUCTS_PER_PAGE,
+    categoryPages.elite * PRODUCTS_PER_PAGE
+  )
+  const paginatedPremiumProducts = premiumProducts.slice(
+    (categoryPages.premium - 1) * PRODUCTS_PER_PAGE,
+    categoryPages.premium * PRODUCTS_PER_PAGE
+  )
+  const paginatedClassicProducts = classicProducts.slice(
+    (categoryPages.classic - 1) * PRODUCTS_PER_PAGE,
+    categoryPages.classic * PRODUCTS_PER_PAGE
+  )
+  const setCategoryPage = (category, page) => {
+    setCategoryPages((current) => ({ ...current, [category]: page }))
+  }
+  const bestSellerIds = {
+    elite: getBestSellerId(eliteProducts),
+    premium: getBestSellerId(premiumProducts),
+    classic: getBestSellerId(classicProducts),
+  }
 
   const getAllProducts = async () => {
     const result = await getAllProductApi(search)
@@ -23,53 +96,127 @@ function Allproducts() {
   }
 
   useEffect(() => {
-    const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
-    setFavorites(savedWishlist)
-  }, [])
+    let isCurrent = true
 
-  const handleClick = (product) => {
+    const getWishlistItems = async () => {
+      if (!userId) {
+        setFavorites([])
+        return
+      }
+
+      const result = await getAllWishlistProductApi(userId)
+      if (isCurrent && result?.status === 200) {
+        setFavorites(result.data.wishlist.map((item) => item.productid))
+      }
+    }
+
+    getWishlistItems()
+    return () => {
+      isCurrent = false
+    }
+  }, [userId])
+
+  const handleClick = async (product) => {
+    if (!userId) {
+      toast.info('Please login to make wishlist')
+      return
+    }
+
     const productId = product._id || product.title
+    if (pendingFavorites.has(productId)) return
 
-    setFavorites((currentFavorites) => {
-      const isFavorite = currentFavorites.includes(productId)
-      const nextFavorites = isFavorite
-        ? currentFavorites.filter((id) => id !== productId)
-        : [...currentFavorites, productId]
 
-      localStorage.setItem('wishlist', JSON.stringify(nextFavorites))
-      return nextFavorites
-    })
+
+    //to wishlist / delete from wishlist
+    const isFavorite = favorites.includes(productId)
+    setPendingFavorites((current) => new Set(current).add(productId))
+
+    try {
+      const result = isFavorite
+        ? await deleteFromWishlistApi(productId, { userId })
+        : await addToWishlistApi(product, userId)
+
+      if (result?.status !== 200) {
+        toast.error(result?.response?.data?.message || 'Could not update wishlist')
+        return
+      }
+
+      setFavorites((current) => isFavorite ? current.filter((id) => id !== productId) : current.includes(productId) ? current : [...current, productId])
+      toast.success(isFavorite ? 'Removed from wishlist' : 'Added to wishlist')
+    }
+    finally {
+      setPendingFavorites((current) => {
+        const next = new Set(current)
+        next.delete(productId)
+        return next
+      })
+    }
+
   }
 
+  //add to cart
+  const addToCart = async (product) => {
+    console.log(userId);
+
+    if (!userId) {
+      toast.info('Please Login')
+    }
+    else {
+      if (product.stock <= 0) {
+        toast.error("sorry product is out off stock")
+      }
+      else {
+        const result = await addToCartApi(userId, product)
+        console.log(result);
+        if (result?.status >= 200 && result.status < 300) {
+          toast.success(result.data.message)
+
+        }
+        else {
+          toast.error(result?.response?.data?.message || 'Could not update Cart')
+          return
+        }
+      }
+
+
+
+    }
+  }
+
+
+
   useEffect(() => {
+    setCategoryPages({ elite: 1, premium: 1, classic: 1 })
     getAllProducts()
   }, [search])
 
+  useEffect(() => {
+    const cards = productsContentRef.current?.querySelectorAll('.spice-product')
+
+    if (!cards?.length) return undefined
+
+    const observer = new IntersectionObserver((entries, currentObserver) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+          currentObserver.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.2 })
+
+    cards.forEach((card) => observer.observe(card))
+
+    return () => observer.disconnect()
+  }, [products, categoryPages])
 
 
-  // const toggleFavorite = (product) => {
-  //   const productId = product._id || product.title
-  //   const wishlist = readWishlist()
-  //   const nextWishlist = wishlist.some((item) => item.id === productId)
-  //     ? wishlist.filter((item) => item.id !== productId)
-  //     : [...wishlist, {
-  //       id: productId,
-  //       title: product.title,
-  //       price: product.price,
-  //       varient: product.varient || 'Whole Spices',
-  //       quantity: product.quantity || '100g',
-  //       image: product._id ? `${serverUrl}/uploads/${product.image}` : product.image,
-  //     }]
 
-  //   localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(nextWishlist))
-  //   setFavorites(nextWishlist.map((item) => item.id))
-  // }
 
   return (
     <div className="products-page">
       <Header activePage="products" />
 
-      <main>
+      <main style={{ marginBottom: '80px' }}>
         <section className="products-hero">
           <div className="products-hero-copy">
             <p className="products-eyebrow mini-title"><span>♧</span>Pure spices. Naturally.<i /></p>
@@ -93,7 +240,7 @@ function Allproducts() {
             </div>
           </aside>
 
-          <div className="products-content">
+          <div className="products-content" ref={productsContentRef}>
             <div className="products-toolbar">
               <p>Our collection <span>{products.length} spices</span></p>
               <label className="products-search">
@@ -111,9 +258,10 @@ function Allproducts() {
             <h2 className='varient-heading'>Elite Spices</h2>
             {products.length > 0 ? (
               <div className="products-grid">
-                {products.filter((item) => item.varient === 'Elite (1st quality)').map((product, index, array) => {
+                {paginatedEliteProducts.map((product, index) => {
                   const productId = product._id || product.title
                   const image = product._id ? `${serverUrl}/uploads/${product.image}` : product.image
+                  const isLastEliteProduct = (categoryPages.elite - 1) * PRODUCTS_PER_PAGE + index === eliteProducts.length - 1
 
                   return (
                     <article className="spice-product" key={productId}>
@@ -124,14 +272,19 @@ function Allproducts() {
                           alt={product.title}
                           style={{ objectPosition: product.imagePosition || `${50 + (index % 4) * 8}% center` }} />
 
-                        {(index === 0 && index !== array.length - 1) && <span className="spice-product-tag">Best seller</span>}
-                        {index === array.length - 1 && <span className="spice-product-tag">New</span>}
-                        {product.stock == 0 && <span className="spice-product-tag" style={{ backgroundColor: 'red' }}>Out of Stock</span>}
+                        {Number(product.stock) <= 0 ? (
+                          <span className="spice-product-tag" style={{ backgroundColor: 'red' }}>Out of Stock</span>
+                        ) : productId === bestSellerIds.elite ? (
+                          <span className="spice-product-tag">Best seller</span>
+                        ) : isLastEliteProduct ? (
+                          <span className="spice-product-tag">New</span>
+                        ) : null}
                         <button
                           className={`spice-favorite ${favorites.includes(productId) ? 'is-favorite' : ''}`}
                           type="button"
                           aria-label={`${favorites.includes(productId) ? 'Remove' : 'Add'} ${product.title} ${favorites.includes(productId) ? 'from' : 'to'} wishlist`}
                           aria-pressed={favorites.includes(productId)}
+                          disabled={pendingFavorites.has(productId)}
                           onClick={() => handleClick(product)}
                         >
                           <FontAwesomeIcon icon={faHeart} />
@@ -143,7 +296,7 @@ function Allproducts() {
                         <p>{product.description}</p>
                         <div className="spice-product-buy">
                           <span>₹ {product.price}<small> /kg</small></span>
-                          <button type="button" aria-label={`Add ${product.title} to bag`} onClick={() => setBagCount((count) => count + 1)}>
+                          <button type="button" aria-label={`Add ${product.title} to bag`} onClick={() => { setBagCount((count) => count + 1), addToCart(product) }}>
                             <FontAwesomeIcon icon={faBagShopping} />
                             {/* <FontAwesomeIcon icon={faArrowRight} /> */}
                           </button>
@@ -152,21 +305,28 @@ function Allproducts() {
                     </article>
                   )
                 })}
-                {products.filter((item) => item.varient === 'Elite (1st quality)').length === 0 && (
+                {eliteProducts.length === 0 && (
                   <p className="products-empty">No elite spices match.</p>
                 )}
               </div>
             ) : (
               <p className="products-empty">No spices match “{search}”.</p>
             )}
+            <ProductPagination
+              page={categoryPages.elite}
+              pageCount={elitePageCount}
+              onPageChange={(page) => setCategoryPage('elite', page)}
+              label="Elite"
+            />
 
             <h2 className='varient-heading'>Premium Spices</h2>
 
-            {/* {products.length > 0 ? (
+            {products.length > 0 ? (
               <div className="products-grid">
-                {products.filter((item) => item.varient === 'Premium (2nd quality)').map((product, index, array) => {
+                {paginatedPremiumProducts.map((product, index) => {
                   const productId = product._id || product.title
                   const image = product._id ? `${serverUrl}/uploads/${product.image}` : product.image
+                  const isLastPremiumProduct = (categoryPages.premium - 1) * PRODUCTS_PER_PAGE + index === premiumProducts.length - 1
 
                   return (
                     <article className="spice-product" key={productId}>
@@ -175,18 +335,22 @@ function Allproducts() {
                           className="spice-product-image"
                           src={image}
                           alt={product.title}
-                          style={{ objectPosition: product.imagePosition || `${50 + (index % 4) * 8}% center` }}
-                          onError={(event) => { event.currentTarget.src = '/assets/hero_IMAGE.png' }}
-                        />
-                        {(index === 0 && index !== array.length - 1) && <span className="spice-product-tag">Best seller</span>}
-                        {(index === array.length - 1) && <span className="spice-product-tag">New</span>}
-                        {product.stock == 0 && <span className="spice-product-tag" style={{ backgroundColor: 'red' }}>Out of Stock</span>}
+                          style={{ objectPosition: product.imagePosition || `${50 + (index % 4) * 8}% center` }} />
+
+                        {Number(product.stock) <= 0 ? (
+                          <span className="spice-product-tag" style={{ backgroundColor: 'red' }}>Out of Stock</span>
+                        ) : productId === bestSellerIds.premium ? (
+                          <span className="spice-product-tag">Best seller</span>
+                        ) : isLastPremiumProduct ? (
+                          <span className="spice-product-tag">New</span>
+                        ) : null}
                         <button
-                          className={`spice-favorite${favorites.includes(productId) ? ' is-favorite' : ''}`}
+                          className={`spice-favorite ${favorites.includes(productId) ? 'is-favorite' : ''}`}
                           type="button"
-                          aria-label={`${favorites.includes(productId) ? 'Remove' : 'Add'} ${product.title} ${favorites.includes(productId) ? 'from' : 'to'} favorites`}
+                          aria-label={`${favorites.includes(productId) ? 'Remove' : 'Add'} ${product.title} ${favorites.includes(productId) ? 'from' : 'to'} wishlist`}
                           aria-pressed={favorites.includes(productId)}
-                          onClick={() => toggleFavorite(product)}
+                          disabled={pendingFavorites.has(productId)}
+                          onClick={() => handleClick(product)}
                         >
                           <FontAwesomeIcon icon={faHeart} />
                         </button>
@@ -196,31 +360,38 @@ function Allproducts() {
                         <p>{product.varient || 'Whole Spices'}</p>
                         <p>{product.description}</p>
                         <div className="spice-product-buy">
-                          <span>₹ {product.price}<small> / {product.quantity || '100g'}</small></span>
-                          <button type="button" aria-label={`Add ${product.title} to bag`} onClick={() => setBagCount((count) => count + 1)}>
+                          <span>₹ {product.price}<small> /kg</small></span>
+                          <button type="button" aria-label={`Add ${product.title} to bag`} onClick={() =>{ setBagCount((count) => count + 1), addToCart(product)}}>
                             <FontAwesomeIcon icon={faBagShopping} />
-
+                            {/* <FontAwesomeIcon icon={faArrowRight} /> */}
                           </button>
                         </div>
                       </div>
                     </article>
                   )
                 })}
-                {products.filter((item) => item.varient === 'Premium (2nd quality)').length === 0 && (
-                  <p className="products-empty">No premium spices match</p>
+                {premiumProducts.length === 0 && (
+                  <p className="products-empty">No premium spices match.</p>
                 )}
               </div>
             ) : (
               <p className="products-empty">No spices match “{search}”.</p>
-            )} */}
+            )}
+            <ProductPagination
+              page={categoryPages.premium}
+              pageCount={premiumPageCount}
+              onPageChange={(page) => setCategoryPage('premium', page)}
+              label="Premium"
+            />
 
             <h2 className='varient-heading'>Classic Spices</h2>
 
-            {/* {products.length > 0 ? (
+            {products.length > 0 ? (
               <div className="products-grid">
-                {products.filter((item) => item.varient === 'Classic (low quality)').map((product, index, array) => {
+                {paginatedClassicProducts.map((product, index) => {
                   const productId = product._id || product.title
                   const image = product._id ? `${serverUrl}/uploads/${product.image}` : product.image
+                  const isLastClassicProduct = (categoryPages.classic - 1) * PRODUCTS_PER_PAGE + index === classicProducts.length - 1
 
                   return (
                     <article className="spice-product" key={productId}>
@@ -229,18 +400,22 @@ function Allproducts() {
                           className="spice-product-image"
                           src={image}
                           alt={product.title}
-                          style={{ objectPosition: product.imagePosition || `${50 + (index % 4) * 8}% center` }}
-                          onError={(event) => { event.currentTarget.src = '/assets/hero_IMAGE.png' }}
-                        />
-                        {(index === 0 && index !== array.length - 1) && <span className="spice-product-tag">Best seller</span>}
-                        {index === array.length - 1 && <span className="spice-product-tag">New</span>}
-                        {product.stock == 0 && <span className="spice-product-tag" style={{ backgroundColor: 'red' }}>Out of Stock</span>}
+                          style={{ objectPosition: product.imagePosition || `${50 + (index % 4) * 8}% center` }} />
+
+                        {Number(product.stock) <= 0 ? (
+                          <span className="spice-product-tag" style={{ backgroundColor: 'red' }}>Out of Stock</span>
+                        ) : productId === bestSellerIds.classic ? (
+                          <span className="spice-product-tag">Best seller</span>
+                        ) : isLastClassicProduct ? (
+                          <span className="spice-product-tag">New</span>
+                        ) : null}
                         <button
-                          className={`spice-favorite${favorites.includes(productId) ? ' is-favorite' : ''}`}
+                          className={`spice-favorite ${favorites.includes(productId) ? 'is-favorite' : ''}`}
                           type="button"
-                          aria-label={`${favorites.includes(productId) ? 'Remove' : 'Add'} ${product.title} ${favorites.includes(productId) ? 'from' : 'to'} favorites`}
+                          aria-label={`${favorites.includes(productId) ? 'Remove' : 'Add'} ${product.title} ${favorites.includes(productId) ? 'from' : 'to'} wishlist`}
                           aria-pressed={favorites.includes(productId)}
-                          onClick={() => toggleFavorite(product)}
+                          disabled={pendingFavorites.has(productId)}
+                          onClick={() => handleClick(product)}
                         >
                           <FontAwesomeIcon icon={faHeart} />
                         </button>
@@ -250,29 +425,35 @@ function Allproducts() {
                         <p>{product.varient || 'Whole Spices'}</p>
                         <p>{product.description}</p>
                         <div className="spice-product-buy">
-                          <span>₹ {product.price}<small> / {product.quantity || '100g'}</small></span>
-                          <button type="button" aria-label={`Add ${product.title} to bag`} onClick={() => setBagCount((count) => count + 1)}>
+                          <span>₹ {product.price}<small> /kg</small></span>
+                          <button type="button" aria-label={`Add ${product.title} to bag`} onClick={() => {setBagCount((count) => count + 1), addToCart(product)}}>
                             <FontAwesomeIcon icon={faBagShopping} />
-
+                            {/* <FontAwesomeIcon icon={faArrowRight} /> */}
                           </button>
                         </div>
                       </div>
                     </article>
                   )
                 })}
-                {products.filter((item) => item.varient === 'Classic (low quality)').length === 0 && (
-                  <p className="products-empty">No classic spices match </p>
+                {classicProducts.length === 0 && (
+                  <p className="products-empty">No classic spices match.</p>
                 )}
               </div>
             ) : (
               <p className="products-empty">No spices match “{search}”.</p>
-            )} */}
+            )}
+            <ProductPagination
+              page={categoryPages.classic}
+              pageCount={classicPageCount}
+              onPageChange={(page) => setCategoryPage('classic', page)}
+              label="Classic"
+            />
 
 
           </div>
         </section>
       </main>
-
+      <ToastContainer position='top-right' autoClose={3000} theme='colored' />
       <Footer />
     </div>
   )

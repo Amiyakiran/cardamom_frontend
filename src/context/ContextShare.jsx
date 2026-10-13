@@ -9,6 +9,7 @@ const ContextShare = ({ children }) => {
    const [userId, setUserId] = useState("")
   const [loading, setLoading] = useState(true)
 
+
   const checkAuth = async () => {
     // console.log("checkAuth running")
     try {

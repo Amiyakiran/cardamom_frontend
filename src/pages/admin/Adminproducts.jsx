@@ -368,7 +368,7 @@ function Adminproducts() {
                                                     <option>select Varient</option>
                                                     <option>Elite (1st quality)</option>
                                                     <option>Premium (2nd quality)</option>
-                                                    <option>Classic (low quality)</option>
+                                                    <option>Classic (3rd quality)</option>
                                                 </select>
                                             </label>
                                             <label>Price <em>*</em><input name="price" placeholder="₹" value={productDetails.price} onChange={(e) => setProductDetails({ ...productDetails, price: e.target.value })} />

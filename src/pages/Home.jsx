@@ -5,7 +5,7 @@ import { Link, Links } from 'react-router-dom'
 import {faArrowRight}from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' // Icon component
 import { getHomeProductsApi } from '../services/allApi'
-import { useState , useEffect } from 'react'
+import { useState , useEffect, useRef } from 'react'
 import { serverUrl } from '../services/serverUrl'
 
 // const products = [
@@ -18,6 +18,7 @@ import { serverUrl } from '../services/serverUrl'
 function Home() {
 
   const [products, setProducts] = useState([])
+  const productGridRef = useRef(null)
 
   const getProducts = async()=>{
     const result = await getHomeProductsApi()
@@ -30,6 +31,25 @@ function Home() {
 useEffect(()=>{
   getProducts()
 },[])
+
+useEffect(() => {
+  const cards = productGridRef.current?.querySelectorAll('.home-product-card')
+
+  if (!cards?.length) return undefined
+
+  const observer = new IntersectionObserver((entries, currentObserver) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible')
+        currentObserver.unobserve(entry.target)
+      }
+    })
+  }, { threshold: 0.2 })
+
+  cards.forEach((card) => observer.observe(card))
+
+  return () => observer.disconnect()
+}, [products])
 
   return (
     <div className="home-page">
@@ -53,7 +73,7 @@ useEffect(()=>{
           <p className="home-kicker">OUR PRODUCTS</p>
           <h2>Elite Spices<br />for a Richer Tomorrow</h2>
           <p>Pure. Natural. Authentic.</p>
-          <div className="home-product-grid">
+          <div className="home-product-grid" ref={productGridRef}>
             {products.map((item, index) => (
               <article className="home-product-card" key={item.title}>
                 <div className={`home-product-visual visual-${index + 1}`}>
@@ -66,8 +86,8 @@ useEffect(()=>{
             ))}
           </div>
         </section>
-      <div style={{display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column'}}>
-        <Link to="/all-products" style={{fontSize: '16px', color: '#9e9653'}}>let's have a look to all our Products<span>→</span></Link>
+      <div style={{display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column',marginBottom:'80px'}}>
+        <Link id='homeproductlink' to="/all-products">let's have a look to all our Products<span>→</span></Link>
          </div>
       </main>
       <Footer />

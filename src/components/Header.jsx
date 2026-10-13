@@ -24,11 +24,11 @@ function Header({ activePage = '' }) {
   return (
     <header className="site-header">
       <Link className="site-brand" to="/" aria-label="Green Gold home">
-        <img className="site-brand-mark" src="/assets/leaf.png" alt="" />
-        <span className="site-brand-copy">
+        <img className="site-brand-mark" src="/assets/ggs.png" alt="logo" />
+        {/* <span className="site-brand-copy">
           <strong>GREEN GOLD</strong>
           <small>SPICES</small>
-        </span>
+        </span> */}
       </Link>
 
       <nav className="site-nav" aria-label="Main navigation">

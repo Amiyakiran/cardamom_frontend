@@ -112,11 +112,11 @@ export default function Login({ register, forgetPassword, reset_password }) {
     const reqBody = { "name": decodedUser.name, "email": decodedUser.email, "password": "googlepswd", remember }
 
     const result = await googleLoginApi(reqBody)
-    // console.log(result);
+     console.log(result);
     if (result.status === 200) {
       checkAuth()
       toast.success("Login successful!")
-      if (result.data.user.name == "Shivapriya") {
+      if (result.data.user.name == "Shivapriya" || result.data.user.email ==='greengoldspices.ndkm@gmail.com') {
         setTimeout(() => {
           navigate("/admin/dashboard")
         }, 5005)
