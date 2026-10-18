@@ -230,7 +230,7 @@ function Adminproducts() {
 
                         </div>
 
-                        <div className="blog-stat-grid">
+                        <div className="blog-stat-grid products-stat-grid">
                             <StatCard icon={faFileLines} label="Total products" value={allproducts.allProductArray.length} detail="↑ 2 new this week" />
                             <StatCard icon={faCheckCircle} label="In stock" value={allproducts.allProductArray.filter((item) => Number(item.stock) >= Number(stockThreshold))?.length} detail="↑ 1 new this week" />
                             <StatCard icon={faFileLines} label="Low stock" value={allproducts.allProductArray.filter((item) => Number(item.stock) > 0 && Number(item.stock) < Number(stockThreshold))?.length} detail="↑ 0 this week" tone="blue" />

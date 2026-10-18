@@ -249,6 +249,24 @@ export const addBlogApi = async (body, reqHeader) => {
   }
 }
 
+//get all blog
+export const getAllBlogApi = async () => {
+  try {
+    return await commonApi('GET', `${serverUrl}/get_all_blogs`)
+
+  } catch (error) {
+    return error
+  }
+}
+//delete blog
+export const deleteBlogApi = async (id) => {
+  try {
+    return await commonApi('DELETE', `${serverUrl}/delete_blog/${id}`)
+
+  } catch (error) {
+    return error
+  }
+}
 //add products
 
 export const addProductApi = async (body, reqHeader) => {

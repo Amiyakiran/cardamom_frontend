@@ -318,6 +318,7 @@
     position: relative;
     /* min-height: 220px; */
     overflow: hidden;
+    margin: 0px 20px;
     border-radius: 0px !important;
     /* border-radius: 180px 1px 180px 1px !important; */
     box-shadow: 0 14px 28px rgba(17, 28, 24, 0.332);
@@ -326,7 +327,7 @@
 .about-step-visual img {
     display: block;
     width: 100%;
-    height: 100%;
+    height:270px;
     object-fit: cover;
 }
 

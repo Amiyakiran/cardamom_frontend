@@ -20,7 +20,9 @@
 .admin-sidebar-design .site-brand {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
+    width: 100%;
     color: #fffdf4;
     text-decoration: none;
     flex-shrink: 0;
@@ -28,8 +30,8 @@
 }
 
 .admin-sidebar-design .site-brand-mark {
-    width: 48px;
-    height: 58px;
+    width: 150px;
+    height: 80px;
     object-fit: contain;
 }
 
@@ -239,8 +241,8 @@
     }
 
     .admin-sidebar-design .site-brand {
-        justify-content: flex-start;
-        margin: 20px 16px;
+        justify-content: center;
+        margin: 20px 0;
     }
 
     .admin-sidebar-design .site-brand-copy,
@@ -249,8 +251,8 @@
     }
 
     .admin-sidebar-design .site-brand-mark {
-        width: 42px;
-        height: 50px;
+        width: 150px;
+        height: 100px;
     }
 
     .admin-sidebar-design__nav {

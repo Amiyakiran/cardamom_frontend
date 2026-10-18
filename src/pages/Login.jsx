@@ -201,7 +201,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
         <div className="left-panel">
           <div className="left-overlay md:ml-40">
             <div className="brand">
-              <img src="/assets/leaf.png" alt="Green Gold" className="brand-logo" />
+              <img src="/assets/ggs1.png" alt="Green Gold" className="brand-logo" />
               <h1 className="brand-title">GREEN GOLD</h1>
               <div className="brand-sub">SPICES</div>
               {/* <div className="promo">

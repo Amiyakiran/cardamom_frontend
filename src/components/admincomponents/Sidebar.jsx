@@ -21,7 +21,7 @@ const navigationItems = [
   { label: 'Inventory', path: '/admin/inventory', icon: faBoxOpen },
   { label: 'Customers', path: '/admin/customers', icon: faUsers},
   { label: 'Blog', path: '/admin/blog', icon: faFileLines },
-  { label: 'Reports', path: '/admin/reports', icon: faChartColumn },
+  // { label: 'Reports', path: '/admin/reports', icon: faChartColumn },
   // { label: 'Coupons', path: '/admin/coupons', icon: faTag },
   { label: 'Settings', path: '/admin/settings', icon: faGear },
 ]
@@ -59,11 +59,11 @@ function Sidebar({ activeItem = 'Blog', onNavigate }) {
         <img src="/assets/logo.png" alt="Green Gold Cardamom" />
       </div> */}
         <Link className="site-brand" to="/admin/dashboard" aria-label="Green Gold home">
-        <img className="site-brand-mark" src="/assets/leaf.png" alt="" />
-        <span className="site-brand-copy">
+        <img className="site-brand-mark" src="/assets/ggs.png" alt="" />
+        {/* <span className="site-brand-copy">
           <strong>GREEN GOLD</strong>
           <small>SPICES</small>
-        </span>
+        </span> */}
       </Link>
 
       <nav className="admin-sidebar-design__nav" aria-label="Admin navigation">
