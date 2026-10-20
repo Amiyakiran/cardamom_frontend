@@ -819,6 +819,33 @@ td small{
   font-family: var(--font-display);
   font-size: 16px !important;
 }
+
+.address-confirmation-select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 42px 12px 14px;
+  border: 1px solid rgba(31, 45, 28, 0.2);
+  border-radius: 8px;
+  background-color: #f9f6f0;
+  color: #1f2d1c;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 13px;
+  box-shadow: none;
+  text-overflow: ellipsis;
+}
+
+.address-confirmation-select:focus {
+  border-color: #b68d2a;
+  box-shadow: 0 0 0 3px rgba(182, 141, 42, 0.16);
+}
+
+.address-confirmation-select option {
+  max-width: 100%;
+  white-space: normal;
+}
+
  form input{
   font-size: 11px !important;
   

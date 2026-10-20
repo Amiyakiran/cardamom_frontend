@@ -313,7 +313,7 @@
 
 .admin-blog-table th {
     height: 30px;
-    padding: 0 6px;
+    padding: 3 6px;
     color: #496d76;
     background: #f6f9f7;
     text-align: left;
@@ -322,7 +322,7 @@
 }
 
 .admin-blog-table td {
-    padding: 7px 6px;
+    padding: 7px 6px !important;
     border-top: 1px solid #edf2ef;
     vertical-align: middle;
 }
@@ -427,23 +427,16 @@
     border: 0;
     border-radius: 3px;
     color: white;
-    background: #168057;
+    background: blue !important;
     cursor: pointer;
     font-size: 7px;
 }
 
 .blog-row-actions button:nth-child(2) {
-    background: #2e8e9d;
+    background: #ef5963 !important;
 }
 
-.blog-row-actions button:nth-child(3) {
-    background: #ef5963;
-}
 
-.blog-row-actions button:nth-child(4) {
-    color: #69838b;
-    background: transparent;
-}
 
 .blog-table-footer {
     display: flex;
@@ -578,7 +571,7 @@
 }
 
 .blog-editor-field .ql-container.ql-snow {
-    height: 240px;
+    height: 70px;
 }
 
 .blog-editor-field .ql-editor {
@@ -1048,4 +1041,8 @@
     font-family:"Playfair Display", serif;
     font-size: 14px!important;
 
+}
+.offcanvastitle{
+       font-family:"Playfair Display", serif;
+    
 }

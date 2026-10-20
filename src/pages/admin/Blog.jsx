@@ -1,16 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faBold, faCalendarDays, faCheckCircle, faChevronDown, faCloudArrowUp, faEdit, faEllipsisVertical, faEye, faFileLines, faItalic, faLeaf, faLink, faList, faMagnifyingGlass, faTrash, faUnderline, faXmark, } from '@fortawesome/free-solid-svg-icons'
+import { faBell,faCheckCircle, faChevronDown, faCloudArrowUp, faEdit,faFileLines, faLeaf,  faMagnifyingGlass, faTrash, faXmark, } from '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-bootstrap/Modal';
 import Sidebar from '../../components/admincomponents/Sidebar'
 import './Blog.css'
-import { addBlogApi, deleteBlogApi, getAllBlogApi } from '../../services/allApi'
+import { addBlogApi, deleteBlogApi, getABlogApi, getAllBlogApi, updateBlogApi } from '../../services/allApi'
 import { ToastContainer, toast } from 'react-toastify';
 import { serverUrl } from '../../services/serverUrl'
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
-const BLOGS_PER_PAGE = 4
+const BLOGS_PER_PAGE = 5
 
 
 
@@ -36,22 +36,55 @@ function Blog() {
         seoTitle: '',
         publishDate: ''
     })
-    const [notice, setNotice] = useState('')
-    // const editorRef = useRef(null)
     const [tableChangeStatus, setTableChangeStatus] = useState(false)
     const [show, setShow] = useState(false);
+    const [editingBlogId, setEditingBlogId] = useState(null)
+    const [editForm, setEditForm] = useState({
+        title: '',
+        image: '',
+        category: '',
+        status: 'Draft',
+        shortDescription: '',
+        longDescription: '',
+        author: '',
+        tags: '',
+        seoTitle: '',
+        publishDate: ''
+    })
+   
+
+
 
     const handleClose = () => setShow(false);
-    const handleShow = (id) => {
-        setShow(true)
-
+    const handleShow = async (id) => {
+        setEditingBlogId(id)
+        const result = await getABlogApi(id)
+        if (result?.status === 200 && result.data) {
+            setEditForm(result.data)
+            setShow(true)
+        } else {
+            toast.error(result?.response?.data?.message || 'Unable to load the blog post.')
+        }
     }
 
 
+    const saveEditBlog = async () => {
+        const reqBody = new FormData()
+        Object.entries(editForm).forEach(([key, value]) => {
+            if (key !== 'image') reqBody.append(key, value ?? '')
+        })
+        if (editForm.image instanceof File) reqBody.append('image', editForm.image)
 
-    console.log(form);
-
-
+        const result = await updateBlogApi(editingBlogId, reqBody, { 'Content-Type': 'multipart/form-data' })
+        if (result?.status >= 200 && result?.status < 300) {
+            toast.success(result.data?.message || 'Blog updated successfully.')
+            setTableChangeStatus((current) => !current)
+            setShow(false)
+        } else {
+            toast.error(result?.response?.data?.message || 'Unable to update the blog post.')
+        }
+    }
+    // console.log(form);
 
     // to add data to form
     const updateForm = (event) => {
@@ -68,6 +101,7 @@ function Blog() {
         }
         setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
     }
+
     //reset the form
     const resetForm = () => {
         setForm({
@@ -87,10 +121,11 @@ function Blog() {
         // const imageInput = document.getElementById('imageUpload')
         // if (imageInput) imageInput.value = ''
     }
+
     //GET all blog
     const loadBlogs = async () => {
         const result = await getAllBlogApi()
-        console.log(result);
+        // console.log(result);
 
         if (result?.status === 200 && Array.isArray(result.data)) {
             setPosts(result.data)
@@ -103,9 +138,20 @@ function Blog() {
         draft: posts.filter((post) => post.status === 'Draft').length,
     }), [posts])
 
+    const categories = useMemo(() => {
+        const uniqueCategories = new Map()
+        posts.forEach((post) => {
+            const name = post.category?.trim()
+            if (name && !uniqueCategories.has(name.toLowerCase())) {
+                uniqueCategories.set(name.toLowerCase(), name)
+            }
+        })
+        return [...uniqueCategories.values()].sort((a, b) => a.localeCompare(b))
+    }, [posts])
+
     const filteredPosts = useMemo(() => posts.filter((post) => (
         post.title.toLowerCase().includes(search.toLowerCase())
-        && (category === 'All Categories' || post.category === category)
+        && (category === 'All Categories' || post.category?.trim().toLowerCase() === category.toLowerCase())
         && (status === 'All Status' || post.status === status)
     )), [posts, search, category, status])
     const pageCount = Math.ceil(filteredPosts.length / BLOGS_PER_PAGE)
@@ -117,42 +163,11 @@ function Blog() {
     const firstVisiblePost = filteredPosts.length === 0 ? 0 : (currentBlogPage - 1) * BLOGS_PER_PAGE + 1
     const lastVisiblePost = Math.min(currentBlogPage * BLOGS_PER_PAGE, filteredPosts.length)
 
-    // const updateLongDescription = () => {
-    //     setForm((current) => ({
-    //         ...current,
-    //         longDescription: editorRef.current?.innerHTML || ''
-    //     }))
-    // }
-
-    // const runEditorCommand = (command) => {
-    //     const editor = editorRef.current
-    //     if (!editor) return
-
-    //     editor.focus()
-    //     if (command === 'createLink') {
-    //         if (!window.getSelection()?.toString().trim()) {
-    //             toast.info('Select the text you want to link first.')
-    //             return
-    //         }
-
-    //         const enteredUrl = window.prompt('Enter a URL for this link')
-    //         if (!enteredUrl) return
-    //         const trimmedUrl = enteredUrl.trim()
-    //         const href = trimmedUrl.startsWith('www.') ? `https://${trimmedUrl}` : trimmedUrl
-    //         if (!/^(https?:\/\/[^\s]+|mailto:[^\s@]+@[^\s@]+\.[^\s@]+)$/i.test(href)) {
-    //             toast.error('Enter a valid HTTP, HTTPS, or email link.')
-    //             return
-    //         }
-    //         document.execCommand('createLink', false, href)
-    //     } else {
-    //         document.execCommand(command, false, null)
-    //     }
-    //     updateLongDescription()
-    // }
-
+   
     //add blog
+
     const saveBlog = async (e) => {
-        console.log('Inside save blog function');
+        // console.log('Inside save blog function');
 
         e.preventDefault()
         // const longDescription = editorRef.current?.innerHTML || ''
@@ -191,7 +206,7 @@ function Blog() {
     //delete blog
     const deleteBlog = async (id) => {
         const result = await deleteBlogApi(id)
-        console.log(result);
+        // console.log(result);
         if (result.status >= 200 && result.status < 300) {
             setTableChangeStatus(!tableChangeStatus)
         } else {
@@ -248,11 +263,9 @@ function Blog() {
                                 </label>
                                 <select value={category} onChange={(event) => { setCategory(event.target.value); setBlogPage(1) }}>
                                     <option>All Categories</option>
-                                    <option>Health & Wellness</option>
-                                    <option>Buying Guide</option>
-                                    <option>Recipes</option>
-                                    <option>Farming</option>
-                                    <option>Spices</option>
+                                    {categories.map((item) => (
+                                        <option key={item} value={item}>{item}</option>
+                                    ))}
                                 </select>
                                 <select value={status} onChange={(event) => { setStatus(event.target.value); setBlogPage(1) }}>
                                     <option>All Status</option>
@@ -299,9 +312,7 @@ function Blog() {
                                                         <button type="button" aria-label="Edit">
                                                             <FontAwesomeIcon icon={faEdit} onClick={() => handleShow(post._id)} />
                                                         </button>
-                                                        <button type="button" aria-label="View">
-                                                            <FontAwesomeIcon icon={faEye} />
-                                                        </button>
+
                                                         <button onClick={() => deleteBlog(post._id)} type="button" aria-label="Delete">
                                                             <FontAwesomeIcon icon={faTrash} />
                                                         </button>
@@ -360,7 +371,8 @@ function Blog() {
                                 <div className="blog-form-row">
                                     <label>Category <em>*</em>
                                         <select name="category" value={form.category} onChange={updateForm} required>
-                                            <option value="">Select category</option><option>Recipes</option><option>Farming</option><option>Health & Wellness</option><option>Buying Guide</option></select></label><label>Status <em>*</em><select name="status" value={form.status} onChange={updateForm}><option>Draft</option><option>Published</option>
+                                            <option value="">Select category</option><option>Recipes</option><option>Farming</option><option>Health & Wellness</option><option>Buying Guide</option>
+                                            <option>Spices</option></select></label><label>Status <em>*</em><select name="status" value={form.status} onChange={updateForm}><option>Draft</option><option>Published</option>
                                             </select>
                                     </label>
                                 </div>
@@ -369,25 +381,7 @@ function Blog() {
                                 </label>
                                 <div className="blog-editor-field">
                                     <span className="blog-editor-label">Content Editor <em>*</em></span>
-                                    {/* <div className="blog-editor">
-                                        <div className="blog-editor-toolbar" role="toolbar" aria-label="Blog content formatting">
-                                            <button type="button" title="Bold" aria-label="Bold" onMouseDown={(event) => event.preventDefault()} onClick={() => runEditorCommand('bold')}><FontAwesomeIcon icon={faBold} /></button>
-                                            <button type="button" title="Italic" aria-label="Italic" onMouseDown={(event) => event.preventDefault()} onClick={() => runEditorCommand('italic')}><FontAwesomeIcon icon={faItalic} /></button>
-                                            <button type="button" title="Underline" aria-label="Underline" onMouseDown={(event) => event.preventDefault()} onClick={() => runEditorCommand('underline')}><FontAwesomeIcon icon={faUnderline} /></button>
-                                            <button type="button" title="Bulleted list" aria-label="Bulleted list" onMouseDown={(event) => event.preventDefault()} onClick={() => runEditorCommand('insertUnorderedList')}><FontAwesomeIcon icon={faList} /></button>
-                                            <button type="button" title="Insert link" aria-label="Insert link" onMouseDown={(event) => event.preventDefault()} onClick={() => runEditorCommand('createLink')}><FontAwesomeIcon icon={faLink} /></button>
-                                        </div>
-                                        <div
-                                            ref={editorRef}
-                                            className="blog-editor-content"
-                                            contentEditable
-                                            role="textbox"
-                                            aria-label="Blog content"
-                                            aria-multiline="true"
-                                            data-placeholder="Write your blog content here..."
-                                            onInput={updateLongDescription}
-                                        />
-                                    </div> */}
+                                    
                                     <ReactQuill
                                         theme="snow"
                                         value={form.longDescription}
@@ -432,11 +426,12 @@ function Blog() {
                                 </div>
 
                                 <div className="blog-form-actions"><button type="button" onClick={resetForm}>Cancel</button>
-                                    <button className="blog-primary-button" type="button" onClick={(e) => saveBlog(e)}>Save</button></div>{notice && <p className="blog-notice" role="status">{notice}</p>}
+                                    <button className="blog-primary-button" type="button" onClick={(e) => saveBlog(e)}>Save</button></div>
                             </form></section>
                     </div>
                 </section>
             </main>
+            {/* modal */}
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title className='edit-heading'>Edit The Blog</Modal.Title>
@@ -444,40 +439,37 @@ function Blog() {
                 <Modal.Body>
                     <form className="admin-blog-form">
                         <label>Blog Title <em>*</em>
-                            <input name="title" value={form.title} onChange={updateForm} placeholder="Enter blog title" required />
+                            <input name="title" value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} placeholder="Enter blog title" required />
                         </label>
                         <label>Featured Image <em>*</em>
                             <div className="blog-upload">
-                                <input name='uploadImage' type="file" id='imageUpload' accept="image/png,image/jpeg" onChange={updateForm} required />
+                                <input name='uploadImage' type="file" id='imageUpload' accept="image/png,image/jpeg" onChange={(e) => setEditForm({ ...editForm, image: e.target.files[0] })} />
                                 <FontAwesomeIcon icon={faCloudArrowUp} />
-                                {form.image == "" ? <span>Click to upload or drag and drop</span>
-                                    : <span>{form.image.name}</span>}
+                                {editForm.image instanceof File ? <span>{editForm.image.name}</span>
+                                    : <span>{editForm.image ? 'Current image saved. Choose a file to replace it.' : 'Click to upload or drag and drop'}</span>}
                                 <small>PNG, JPG (Max 2MB)</small>
                             </div>
                         </label>
 
                         <div className="blog-form-row">
                             <label>Category <em>*</em>
-                                <select name="category" value={form.category} onChange={updateForm} required>
-                                    <option value="">Select category</option><option>Recipes</option><option>Farming</option><option>Health & Wellness</option><option>Buying Guide</option></select></label><label>Status <em>*</em><select name="status" value={form.status} onChange={updateForm}><option>Draft</option><option>Published</option>
-                                    </select>
+                                <select name="category" value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })} required>
+                                    <option value="">Select category</option><option>Recipes</option><option>Farming</option><option>Health & Wellness</option><option>Buying Guide</option></select></label>
+
+                            <label>Status <em>*</em><select name="status" value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}><option>Draft</option><option>Published</option>
+                            </select>
                             </label>
                         </div>
                         <label>Short Description <em>*</em>
-                            <textarea name="shortDescription" value={form.shortDescription} onChange={updateForm} placeholder="Enter a short description (e.g., 1–2 lines)" rows="2" required />
+                            <textarea name="shortDescription" value={editForm.shortDescription} onChange={(e) => setEditForm({ ...editForm, shortDescription: e.target.value })} placeholder="Enter a short description (e.g., 1–2 lines)" rows="2" required />
                         </label>
                         <div className="blog-editor-field">
                             <span className="blog-editor-label">Content Editor <em>*</em></span>
 
                             <ReactQuill
                                 theme="snow"
-                                value={form.longDescription}
-                                onChange={(html) =>
-                                    setForm((prev) => ({
-                                        ...prev,
-                                        longDescription: html,
-                                    }))
-                                }
+                                value={editForm.longDescription}
+                                onChange={(html) => setEditForm({ ...editForm, longDescription: html })}
                                 modules={{
                                     toolbar: [
                                         [{ header: [1, 2, 3, false] }],
@@ -494,36 +486,38 @@ function Blog() {
 
                         <div className="blog-form-row">
                             <label>Author <em>*</em>
-                                <input name="author" value={form.author} onChange={updateForm} placeholder='Author Name' required />
+                                <input name="author" value={editForm.author} onChange={(e) => setEditForm({ ...editForm, author: e.target.value })} placeholder='Author Name' required />
 
                             </label>
-                            <label>Tags<input name="tags" value={form.tags} onChange={updateForm} placeholder="Add tags (comma separated)" />
+                            <label>Tags<input name="tags" value={editForm.tags} onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })} placeholder="Add tags (comma separated)" />
                             </label>
                         </div>
                         <div className="blog-form-row">
                             <label>SEO Title <em>*</em>
-                                <input name="seoTitle" value={form.seoTitle} onChange={updateForm} placeholder="Enter SEO title" required />
+                                <input name="seoTitle" value={editForm.seoTitle} onChange={(e) => setEditForm({ ...editForm, seoTitle: e.target.value })} placeholder="Enter SEO title" required />
                             </label>
                             <label>Publish Date <em>*</em>
                                 <span className="blog-date-input">
-                                    <input type='date' name="publishDate" value={form.publishDate} onChange={updateForm} required />
+                                    <input type='date' name="publishDate" value={editForm.publishDate} onChange={(e) => setEditForm({ ...editForm, publishDate: e.target.value })} required />
                                 </span>
                             </label>
 
                         </div>
 
-                        <div className="blog-form-actions"><button type="button" onClick={resetForm}>Cancel</button>
-                            <button className="blog-primary-button" type="button" onClick={(e) => saveBlog(e)}>Save</button></div>{notice && <p className="blog-notice" role="status">{notice}</p>}
+
                     </form></Modal.Body>
-                <Modal.Footer>
-                    <button className='btn btn-outline-warning border-1 border-warning' onClick={handleClose}>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                    <button className='btn btn-outline-warning border-1 border-warning' onClick={handleClose} style={{ width: '45%' }}>
                         Close
                     </button>
-                    <button className='btn btn-outline-success border-1 border-success' onClick={handleClose}>
+                    <button type="button" className='btn btn-outline-success border-1 border-success' onClick={saveEditBlog} style={{ width: '45%' }}>
                         Save Changes
                     </button>
                 </Modal.Footer>
             </Modal>
+
+           
+            {/* toastify */}
             <ToastContainer position='top-right' autoClose={3000} theme='colored' />
         </div >
     )

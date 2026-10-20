@@ -1,84 +1,80 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './blog.css'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { getABlogApi, getAllBlogApi } from '../services/allApi'
+import { serverUrl } from '../services/serverUrl'
+import Offcanvas from 'react-bootstrap/Offcanvas';
 
-const blogPosts = [
-  {
-    category: 'FARMING',
-    date: 'Apr 22, 2025',
-    title: 'The Journey of Cardamom from Farm to You',
-    description:
-      'Discover how the finest cardamom is carefully grown, harvested and processed in the misty hills of Kerala.',
-    image:
-      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    category: 'GROWING TIPS',
-    date: 'Apr 15, 2025',
-    title: 'Why Cardamom is Called the Queen of Spices',
-    description:
-      'Explore the rich history, unique aroma and the global love for this precious spice.',
-    image:
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    category: 'RECIPES',
-    date: 'Apr 5, 2025',
-    title: '5 Delicious Ways to Use Cardamom in Your Kitchen',
-    description:
-      'From traditional sweets to refreshing drinks, bring the flavor of cardamom to your everyday recipes.',
-    image:
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    category: 'HEALTH & WELLNESS',
-    date: 'Mar 28, 2025',
-    title: 'The Health Benefits of Cardamom',
-    description:
-      'Learn how this powerful spice supports digestion, immunity and overall well-being.',
-    image:
-      'https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    category: 'LIFESTYLE',
-    date: 'Mar 20, 2025',
-    title: 'Life in the Cardamom Hills',
-    description:
-      'A glimpse into the peaceful, natural beauty behind every pod of this cherished spice.',
-    image:
-      'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    category: 'FARMERS',
-    date: 'Mar 12, 2025',
-    title: 'Meet the Farmers Behind Our Cardamom',
-    description:
-      'Real stories, real people, and the hands that bring quality to your cup.',
-    image:
-      'https://images.unsplash.com/photo-1471193945509-9ad0617afabf?auto=format&fit=crop&w=900&q=80',
-  },
-]
 
 const categories = [
   'All',
-  'Farming',
   'Health & Wellness',
+  'Buying Guide',
   'Recipes',
-  'Lifestyle',
+  'Farming',
+  'Spices'
 ]
 
-const sidebarCategories = [
-  { name: 'Farming', count: 12 },
-  { name: 'Growing Tips', count: 8 },
-  { name: 'Recipes', count: 6 },
-  { name: 'Health & Wellness', count: 5 },
-  { name: 'Lifestyle', count: 7 },
-  { name: 'Farmers', count: 4 },
-]
+
 
 export default function Blog() {
+  const [post, setPost] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [searchTerm, setSearchTerm] = useState('')
   const postGridRef = useRef(null)
+  const sidebarCategories = [
+    { name: 'Farming', count: post.filter((item) => item.category == 'Farming').length },
+    { name: 'Buying Guide', count: post.filter((item) => item.category == 'Buying Guide').length },
+    { name: 'Recipes', count: post.filter((item) => item.category == 'Recipes').length },
+    { name: 'Health & Wellness', count: post.filter((item) => item.category == 'Health & Wellness').length },
+    { name: 'Spices', count: post.filter((item) => item.category == 'Spices').length }
+
+  ]
+  const [show, setShow] = useState(false);
+  const [viewBlog, setViewBlog] = useState({})
+  const handleClose = () => setShow(false);
+  const handleShow = async (id) => {
+    setShow(true);
+    const result = await getABlogApi(id)
+    console.log(result);
+    setViewBlog(result.data)
+
+  }
+
+  const filteredPosts = post.filter(
+    (item) => item.status?.trim().toLowerCase() === 'published'
+  ).filter((item) => {
+    const matchesCategory =
+      selectedCategory === 'All' ||
+      item.category?.trim().toLowerCase() === selectedCategory.toLowerCase()
+    const searchableText = [
+      item.title,
+      item.shortDescription,
+      item.category,
+      item.date,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+    const matchesSearch = searchableText.includes(searchTerm.trim().toLowerCase())
+
+    return matchesCategory && matchesSearch
+  })
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadPosts = async () => {
+      const result = await getAllBlogApi()
+      if (isMounted) setPost(result.data)
+    }
+
+    loadPosts()
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   useEffect(() => {
     const cards = postGridRef.current?.querySelectorAll('.blog-card')
@@ -97,26 +93,17 @@ export default function Blog() {
     cards.forEach((card) => observer.observe(card))
 
     return () => observer.disconnect()
-  }, [])
+  }, [post, selectedCategory, searchTerm])
 
   return (
     <div className="blog-page">
       <section className="hero-banner">
-        {/* <video
-          className="hero-video"
-          autoPlay
-          muted
-          loop
-          playsInline
-        >
-          <source src="/assets/video.mp4" type="video/mp4" />
-        </video> */}
 
         <div className="hero-overlay" />
         <Header activePage="blog" />
 
         <div className="hero-text">
-          <p className="mini-title"><span>♧</span>  OUR BLOG <i/></p>
+          <p className="mini-title"><span>♧</span>  OUR BLOG <i /></p>
           <h1>Stories, Tips &amp; Insights from the Misty Hills</h1>
           <p>
             Explore the journey of cardamom — from our lush farms to your cup.
@@ -128,39 +115,52 @@ export default function Blog() {
       <main className="blog-main">
         <section className="content-column">
           <div className="filter-bar">
-            {categories.map((item, index) => (
+            {categories.map((item) => (
               <button
                 key={item}
-                className={index === 0 ? 'filter-chip active' : 'filter-chip'}
+                className={selectedCategory === item ? 'filter-chip active' : 'filter-chip'}
                 type="button"
+                aria-pressed={selectedCategory === item}
+                onClick={() => setSelectedCategory(item)}
               >
                 {item}
               </button>
             ))}
+
           </div>
 
           <div className="post-grid" ref={postGridRef}>
-            {blogPosts.map((post) => (
-              <article key={post.title} className="blog-card">
-                <img src={post.image} alt={post.title} />
+            {filteredPosts.length > 0 ? filteredPosts.map((item, index) => (
+              <article key={item._id || item.id || index} className="blog-card">
+                <img src={`${serverUrl}/uploads/${item.image}`} alt={item.title} />
                 <div className="card-body">
                   <div className="meta-row">
-                    <span className="meta-tag">{post.category}</span>
-                    <span className="meta-date">{post.date}</span>
+                    <span className="meta-tag">{item.category}</span>
+                    <span className="meta-date">{item.date}</span>
                   </div>
-                  <h3>{post.title}</h3>
-                  <p>{post.description}</p>
-                  <button type="button">Read More →</button>
+                  <h3>{item.title}</h3>
+                  <p>{item.shortDescription}</p>
+                  <button onClick={() => handleShow(item._id)} type="button">Read More →</button>
                 </div>
               </article>
-            ))}
+            )) : (
+              <p className="no-blog-results" role="status">
+                No blog posts match your search.
+              </p>
+            )}
           </div>
         </section>
 
         <aside className="sidebar-column">
           <div className="sidebar-box  search-box">
             <span className="search-icon">⌕</span>
-            <input type="text" placeholder="Search blog..." />
+            <input
+              type="search"
+              placeholder="Search blog..."
+              aria-label="Search blog posts"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
           </div>
 
           <div className="sidebar-box categories-box">
@@ -189,6 +189,41 @@ export default function Blog() {
           </div>
         </aside>
       </main>
+
+      <Offcanvas show={show} onHide={handleClose} placement='top'  className="custom-offcanvas p-5">
+        <img src="./assets/ggs1.png" alt="logo" style={{width:'50px', height:'50px', marginLeft:'10px'}} />
+        <Offcanvas.Header closeButton style={{flexDirection:'column'}}>
+          <Offcanvas.Title className='blogtitle'><h1>{viewBlog.title}</h1></Offcanvas.Title>
+                  <small>{viewBlog.shortDescription}</small>
+
+
+        </Offcanvas.Header>
+        
+        <Offcanvas.Body>
+
+        <div className='container-fluid mt-4'>
+            <div className="row">
+              <div className="col-md-5">
+                <img
+                  className="blog-detail-image"
+                  src={`${serverUrl}/uploads/${viewBlog.image}`}
+                  alt={viewBlog.title}
+                />
+                <div className='d-flex justify-content-between mt-3'>
+                  <p>Author : {viewBlog.author}</p>
+                  <p>Publish Date: {viewBlog.publishDate}</p>
+                </div>
+              </div>
+              <div
+                className="col-md-7 blog-detail-content"
+                dangerouslySetInnerHTML={{ __html: viewBlog.longDescription }}
+              >
+              </div>
+            </div>
+        </div>
+        </Offcanvas.Body>
+      </Offcanvas>
+
       <Footer />
     </div>
   )

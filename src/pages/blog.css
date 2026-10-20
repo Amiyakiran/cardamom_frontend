@@ -200,6 +200,13 @@
   gap: 30px;
 }
 
+.no-blog-results {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--blog-muted);
+  text-align: center;
+}
+
 .blog-card {
   background: rgba(255, 255, 255, 0.22);
   border: 1px solid rgba(31, 45, 28, 0.1);
@@ -577,4 +584,91 @@
   .post-grid {
     grid-template-columns: 1fr;
   }
+}
+.custom-offcanvas.offcanvas-top {
+  position: fixed;
+  height: 100vh !important;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: var(--blog-bg);
+}
+
+.custom-offcanvas .offcanvas-header .btn-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1;
+}
+
+.custom-offcanvas.offcanvas-top h3{
+  font-size: 16px !important;
+}
+
+.custom-offcanvas .offcanvas-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.custom-offcanvas .offcanvas-body > .container-fluid,
+.custom-offcanvas .offcanvas-body > .container-fluid > .row {
+  height: 100%;
+}
+
+.blog-detail-image {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  max-height: 300px;
+  height: auto;
+  object-fit: cover;
+}
+
+.blog-detail-content {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  overflow-wrap: anywhere;
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
+}
+
+.blog-detail-content::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.blog-detail-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.blog-detail-content::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 999px;
+}
+
+.blog-detail-content::-webkit-scrollbar-thumb:hover {
+  background-color: #666;
+}
+
+.blog-detail-content::-webkit-scrollbar-button {
+  display: block;
+  width: 8px;
+  height: 8px;
+  color: var(--blog-bg) !important;
+  background: transparent;
+}
+
+.blog-detail-content::-webkit-scrollbar-button:vertical:decrement,
+.blog-detail-content::-webkit-scrollbar-button:vertical:increment {
+  display: block;
+  height: 8px;
+  color: var(--blog-bg) !important;
+}
+
+.blogtitle{
+ font-family: var(--font-display);
 }

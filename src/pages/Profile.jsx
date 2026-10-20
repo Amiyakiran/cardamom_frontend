@@ -1,15 +1,14 @@
 import { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight, faPenToSquare, faBagShopping, faBoxOpen, faCreditCard, faEnvelope, faHeart, faLocationDot, faTrashCan, faShoppingBag, faMinus } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight, faCircleExclamation, faPenToSquare, faBagShopping, faBoxOpen, faCreditCard, faEnvelope, faHeart, faLocationDot, faTrashCan, faShoppingBag, faMinus } from '@fortawesome/free-solid-svg-icons'
 import Header from '../components/Header'
 import { AuthContext } from '../context/ContextShare'
-import { addToCartApi, decrementProductCountApi, deleteAddressApi, deleteFromCartApi, deleteFromWishlistApi, getAllCartItemApi, getAllWishlistProductApi, getMeApi, incrementProductCountApi, UpdateAdressApi, updateProductQuantityApi, updateProfileImageApi } from '../services/allApi'
+import { addToCartApi, decrementProductCountApi, deleteAddressApi, deleteFromCartApi, deleteFromWishlistApi, emptyCartApi, getAllCartItemApi, getAllWishlistProductApi, getMeApi, incrementProductCountApi, placeOrderApi, UpdateAdressApi, updateProductQuantityApi, updateProfileImageApi } from '../services/allApi'
 import './Profile.css'
 import Footer from '../components/Footer'
 import { serverUrl } from '../services/serverUrl'
 import { ToastContainer, toast } from 'react-toastify';
-import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 
@@ -18,7 +17,7 @@ export default function Profile() {
 
   //states
   const { user, loading, userId } = useContext(AuthContext)
-  const [profile, setProfile] = useState(null)
+  const [profile, setProfile] = useState("")
   const [profileLoading, setProfileLoading] = useState(true)
   const [wishlistArray, setWishListArray] = useState([])
   const [wishlistPage, setWishlistPage] = useState(1)
@@ -37,10 +36,20 @@ export default function Profile() {
     state: "",
     pincode: ""
   })
+  const [confirmedAddress, setConfirmedAddress] = useState(null)
 
-  //console.log(profile);
-  console.log(address);
+  // console.log(profile);
+  // console.log(address);
+  const [show1, setShow1] = useState(false);
 
+  const handleClose1 = () => {
+    setShow1(false)
+    setConfirmedAddress(null)
+  }
+  const handleShow1 = () => {
+    setConfirmedAddress(null)
+    setShow1(true)
+  }
 
   //functions
   const handleClose = () => {
@@ -58,6 +67,7 @@ export default function Profile() {
     })
     setAddressValidationVisible({})
   };
+
   const handleShow = () => setShow(true);
   const showAddressValidation = (event) => {
     const { name } = event.target
@@ -263,6 +273,60 @@ export default function Profile() {
     }
   }
 
+  //handle order placement
+  const handleOrderPlacement = async () => {
+    if (!confirmedAddress || Object.keys(confirmedAddress).length === 0) {
+      toast.info('Please select an address')
+      return
+    }
+
+    const reqBody = {
+      name: profile.name,
+      email: profile.email,
+      address: confirmedAddress,
+      products: cartArray,
+      amount: cartArray.map((item) => item.total).reduce((p1, p2) => p1 + p2) + 60
+    }
+    const result = await placeOrderApi(reqBody)
+    //console.log(result);
+    if (result.status >= 200 && result.status < 300) {
+      toast.success(result.data.message)
+      handleClose1()
+      let phone = '+918113804245'
+      const message = `
+                    🛒 *New Order*
+
+Order ID: ${result.data.order.orderId}
+Total items : ${result.data.order.products.length}
+Amount: ₹${result.data.order.TotalAmount}
+Placed Date: ${new Date(result.data.order.createdAt).toLocaleString('en-IN', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+          timeZone: 'Asia/Kolkata',
+        })}
+
+Please follow the provided instructions to complete your payment. Kindly include your **Order ID** in the payment reference or remarks, and share a screenshot of the successful transaction for verification. Your order will be confirmed once the payment has been received and verified.
+                    `;
+
+        const whatsappURL = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+      window.open(whatsappURL, "_blank");
+      handleClose1()
+        const clearCartResult = await emptyCartApi(userId)
+        if (clearCartResult?.status >= 200 && clearCartResult?.status < 300) {
+          setCartArray([])
+        } else {
+          toast.error(
+            clearCartResult?.response?.data?.message ||
+            'Order placed, but we could not clear your cart. Please try again.'
+          )
+        }
+    }
+    else {
+      toast.error("Something went wrong")
+    }
+  }
+
   //useEffects
 
   useEffect(() => {
@@ -277,7 +341,16 @@ export default function Profile() {
     const loadProfile = async () => {
       const result = await getMeApi()
       if (!isCurrent) return
-      setProfile(result?.status === 200 && result.data?.user ? result.data.user : { name: user, email: '' })
+      setProfile(
+        result?.status === 200 && result.data?.user
+          ? {
+            ...result.data.user,
+            address: Array.isArray(result.data.user.address)
+              ? result.data.user.address
+              : [],
+          }
+          : { name: user, email: '', address: [] }
+      )
       setProfileLoading(false)
     }
 
@@ -456,10 +529,10 @@ export default function Profile() {
                       <p>Total Number of Item :  {cartArray.length}</p>
                       <p>Items Price:   ₹ {cartArray.map((item) => item.total).reduce((p1, p2) => p1 + p2)} </p>
                       <p>Delivery Charge:   ₹ 60</p>
-                      <h5 style={{fontFamily:'var(--font-display)'}}>Grand Total :   <span style={{fontFamily:'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'}}>₹ {cartArray.map((item) => item.total).reduce((p1, p2) => p1 + p2) + 60}</span></h5>
+                      <h5 style={{ fontFamily: 'var(--font-display)' }}>Grand Total :   <span style={{ fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif' }}>₹ {cartArray.map((item) => item.total).reduce((p1, p2) => p1 + p2) + 60}</span></h5>
                     </div>
                   </div>}
-                <Link className="profile-primary-link" >Place the Order<FontAwesomeIcon icon={faArrowRight} aria-hidden="true" /></Link>
+                <Link onClick={handleShow1} className="profile-primary-link" >Place the Order<FontAwesomeIcon icon={faArrowRight} aria-hidden="true" /></Link>
               </section>
 
               <section className="profile-card profile-info-card" id="orders">
@@ -492,30 +565,26 @@ export default function Profile() {
                 {profile.address.length == 0 ? <p className="profile-empty-copy">No delivery address saved yet. Your address can be added when you place an order.</p> :
                   <div>
                     {profile.address.map((add, index) => (
-                     
-                        <div className='addressLabel' key={index}>
-                         
-                          <input type="radio" id='addressInput' />
-                          <label className='ms-4' htmlFor="addressInput">
-                            <span style={{ fontWeight: 600 }}>{add.fullname}</span> <br />
-                            <span>{add.flat}, {add.landmark}, {add.street}, {add.city}, {add.state}, PIN: {add.pincode} </span> <br />
-                            <span>{add.mobileno}</span>
-  
-                          </label>
-                            <FontAwesomeIcon icon={faTrashCan} className='text-danger' onClick={()=>deleteAddress(index)}/>
-                        </div>
-                     
+
+                      <div className='addressLabel' key={index}>
+
+
+                        <label className='ms-4' htmlFor="addressInput">
+                          <span style={{ fontWeight: 600 }}>{add.fullname}</span> <br />
+                          <span>{add.flat}, {add.landmark}, {add.street}, {add.city}, {add.state}, PIN: {add.pincode} </span> <br />
+                          <span>{add.mobileno}</span>
+
+                        </label>
+                        <FontAwesomeIcon icon={faTrashCan} className='text-danger' onClick={() => deleteAddress(index)} />
+                      </div>
+
                     ))}
                   </div>
                 }
 
                 <button type='button' onClick={handleShow} className="profile-primary-link" style={{ marginTop: '20px' }}>Add New Address<FontAwesomeIcon icon={faArrowRight} aria-hidden="true" /></button>
+
               </section>
-              {/* <section className="profile-card profile-info-card" id="payments">
-                <div className="profile-card-heading"><h2>Payment Methods</h2><FontAwesomeIcon icon={faCreditCard} aria-hidden="true" /></div>
-                <p className="profile-empty-copy">Payment details are collected securely during checkout. No payment methods are stored here.</p>
-                <button className="profile-primary-link" style={{ marginTop: '20px' }}>Add Payment Method<FontAwesomeIcon icon={faArrowRight} aria-hidden="true" /></button>
-              </section> */}
 
               <Link className="profile-promo" to="/all-products" aria-label="Explore Green Gold spices">
                 <img src="/assets/dashboardImg.png" alt="Green cardamom and whole spices" />
@@ -593,6 +662,50 @@ export default function Profile() {
           </button>
           <button type="submit" form="address-form" disabled={addressSaving} style={{ fontSize: '12px' }} className='rounded-5 btn btn-outline-success border-1 border-success'>
             {addressSaving ? 'Saving...' : 'Update'}
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={show1} onHide={handleClose1} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Address Confirmation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+
+
+          {(profile?.address ?? []).map((add, index) => (
+            <div key={add._id || index} className="address-option">
+              <input
+                type="radio"
+                id={`shipping-address-${index}`}
+                name="address"
+                value={index}
+                onChange={() => setConfirmedAddress(add)}
+              />
+              <label htmlFor={`shipping-address-${index}`} className='ps-2'>
+                {[
+                  add.fullname,
+                  add.flat,
+                  add.landmark,
+                  add.street,
+                  add.city,
+                  add.state,
+                  add.pincode && `PIN: ${add.pincode}`,
+                  add.mobileno && `Phone: ${add.mobileno}`,
+                ].filter(Boolean).join(', ')}
+              </label>
+            </div>
+          ))}
+
+          <p className="mt-5 text-danger text-start"><FontAwesomeIcon icon={faCircleExclamation} className="me-2" />By clicking Continue, you will be redirected to our official WhatsApp account to proceed with the payment process. Please follow the instructions provided to complete your payment. Your order will be confirmed once the payment has been received and verified.</p>
+
+        </Modal.Body>
+        <Modal.Footer className='d-flex'>
+          <button className='btn btn-outline-warning border-1 border-warning w-25' onClick={handleClose1}>
+            Close
+          </button>
+          <button variant="primary" className='btn btn-outline-success border-1 border-success w-25' onClick={handleOrderPlacement}>
+            Continue
           </button>
         </Modal.Footer>
       </Modal>

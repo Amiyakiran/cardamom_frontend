@@ -90,6 +90,24 @@ export const getAproductApi = async (id) => {
   }
 }
 
+//get a particular blog
+export const getABlogApi = async (id) => {
+  try {
+    return await commonApi('GET', `${serverUrl}/get-blog/${id}`)
+
+  } catch (error) {
+    return error
+  }
+}
+
+//update a blog
+export const updateBlogApi = async (id, body, reqHeader) => {
+  try {
+    return await commonApi('POST', `${serverUrl}/edit_blog/${id}`, body, reqHeader)
+  } catch (error) {
+    return error
+  }
+}
 //get home products
 export const getHomeProductsApi = async () => {
   try {
@@ -233,8 +251,25 @@ export const deleteAddressApi = async(id, body)=>{
   }
 }
 
+//place order
+export const placeOrderApi = async(body)=>{
+   try {
+    return await commonApi('POST', `${serverUrl}/place-order`, body)
 
+  } catch (error) {
+    return error
+  }
+}
 
+//empty cart
+export const emptyCartApi = async(id)=>{
+   try {
+    return await commonApi('DELETE', `${serverUrl}/empty-cart/${id}`)
+
+  } catch (error) {
+    return error
+  }
+}
 //----------------------------------------------------------
 
 //admin
@@ -267,6 +302,9 @@ export const deleteBlogApi = async (id) => {
     return error
   }
 }
+
+
+
 //add products
 
 export const addProductApi = async (body, reqHeader) => {
