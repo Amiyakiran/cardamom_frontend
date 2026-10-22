@@ -1,0 +1,95 @@
+.admin-shared-header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  min-height: 47px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 21px;
+  border-bottom: 1px solid #e2ebe9;
+  background: rgba(255, 255, 255, .94);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+}
+
+.admin-shared-account {
+  position: relative;
+}
+
+.admin-shared-account-trigger {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  color: #17483b;
+  background: transparent;
+  font: 600 10px "Manrope", "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.admin-shared-avatar {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #17533f;
+  font-weight: 700;
+}
+
+.admin-shared-account-trigger > svg {
+  font-size: 8px;
+}
+
+.admin-shared-dropdown {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 30;
+  min-width: 145px;
+  padding: 5px;
+  border: 1px solid #e2ebe9;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(25, 58, 44, .14);
+}
+
+.admin-shared-dropdown button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 0;
+  border-radius: 4px;
+  color: #17483b;
+  background: transparent;
+  font: 500 11px "Manrope", "Segoe UI", sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-shared-dropdown button:hover,
+.admin-shared-dropdown button:focus-visible {
+  background: #f0f6f2;
+}
+
+.admin-shared-dropdown p {
+  margin: 4px 8px 6px;
+  color: #a3332d;
+  font-size: 10px;
+}
+
+@media (max-width: 560px) {
+  .admin-shared-header {
+    min-height: 43px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .admin-shared-account-trigger > span:not(.admin-shared-avatar),
+  .admin-shared-account-trigger > svg {
+    display: none;
+  }
+}

@@ -90,7 +90,7 @@ function Allproducts() {
 
   const getAllProducts = async () => {
     const result = await getAllProductApi(search)
-    console.log(result.data);
+    // console.log(result.data);
 
     setProducts(result.data)
   }
@@ -156,7 +156,7 @@ function Allproducts() {
 
   //add to cart
   const addToCart = async (product) => {
-    console.log(userId);
+    // console.log(userId);
 
     if (!userId) {
       toast.info('Please Login')
@@ -167,7 +167,7 @@ function Allproducts() {
       }
       else {
         const result = await addToCartApi(userId, product)
-        console.log(result);
+        // console.log(result);
         if (result?.status >= 200 && result.status < 300) {
           toast.success(result.data.message)
 

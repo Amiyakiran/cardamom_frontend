@@ -1,105 +1,155 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faArrowTrendUp,
-  faBell,
-  faBoxOpen,
-  faCheck,
-  faChevronDown,
-  faChevronLeft,
-  faChevronRight,
-  faCircleCheck,
-  faClock,
-  faEllipsisVertical,
-  faEye,
-  faLeaf,
-  faLocationDot,
-  faMagnifyingGlass,
-  faPrint,
-  faReceipt,
-  faTruckFast,
-  faUser,
-} from '@fortawesome/free-solid-svg-icons'
+import Modal from 'react-bootstrap/Modal';
+import { faBell, faChevronLeft, faChevronRight, faCircleCheck, faClock, faEllipsisVertical, faEye, faLeaf, faReceipt, faTruckFast,faUser ,faLocationDot ,faBoxOpen ,faPrint  } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/admincomponents/Sidebar'
+import AdminHeader from '../../components/admincomponents/AdminHeader'
 import './Adminorders.css'
+import { deleteOrderApi, getAllOrdersApi, getAOrdersApi, updateOrderStatusApi } from '../../services/allApi'
+import { serverUrl } from '../../services/serverUrl';
+import { toast, ToastContainer } from 'react-toastify';
 
-const initialOrders = [
-  { id: 'ORD12345', customer: 'Ayesha Khan', email: 'ayesha@email.com', phone: '+91 98765 43210', date: '12 Apr 2025', time: '10:24 AM', total: 1250, status: 'Delivered', items: 5, address: '123, Green Valley Apartments, Dubai, UAE - 00000', payment: 'Paid via Visa •••• 2319', products: [{ name: 'Green Cardamom', quantity: 1, price: 450, imagePosition: '44% 56%' }, { name: 'Cinnamon', quantity: 2, price: 320, imagePosition: '78% 49%' }, { name: 'Black Pepper', quantity: 1, price: 280, imagePosition: '61% 72%' }] },
-  { id: 'ORD12344', customer: 'Rahul Nair', email: 'rahul@email.com', phone: '+91 98765 43211', date: '11 Apr 2025', time: '03:40 PM', total: 980, status: 'Shipped', items: 3, address: '18 Palm Grove Road, Kochi, Kerala - 682001', payment: 'Paid via UPI', products: [{ name: 'Cinnamon', quantity: 2, price: 320, imagePosition: '78% 49%' }] },
-  { id: 'ORD12343', customer: 'Sneha Pillai', email: 'sneha@email.com', phone: '+91 98765 43212', date: '11 Apr 2025', time: '11:12 AM', total: 560, status: 'Pending', items: 2, address: '24 Lake View, Thrissur, Kerala - 680001', payment: 'Cash on delivery', products: [{ name: 'Black Pepper', quantity: 2, price: 280, imagePosition: '61% 72%' }] },
-  { id: 'ORD12342', customer: 'Vikram S.', email: 'vikram@email.com', phone: '+91 98765 43213', date: '10 Apr 2025', time: '06:25 PM', total: 1860, status: 'Delivered', items: 4, address: '7 Spice Garden Lane, Kozhikode, Kerala - 673001', payment: 'Paid via Mastercard', products: [{ name: 'Turmeric', quantity: 2, price: 390, imagePosition: '24% 60%' }] },
-  { id: 'ORD12341', customer: 'Divya R.', email: 'divya@email.com', phone: '+91 98765 43214', date: '10 Apr 2025', time: '01:15 PM', total: 320, status: 'Shipped', items: 1, address: '51 Market Road, Kannur, Kerala - 670001', payment: 'Paid via UPI', products: [{ name: 'Cloves', quantity: 1, price: 320, imagePosition: '57% 66%' }] },
-  { id: 'ORD12340', customer: 'Arjun P.', email: 'arjun@email.com', phone: '+91 98765 43215', date: '09 Apr 2025', time: '09:42 AM', total: 2480, status: 'Delivered', items: 6, address: '3 Hilltop Estate, Wayanad, Kerala - 673121', payment: 'Paid via Visa •••• 4582', products: [{ name: 'Cinnamon', quantity: 2, price: 320, imagePosition: '78% 49%' }] },
-  { id: 'ORD12339', customer: 'Meera K.', email: 'meera@email.com', phone: '+91 98765 43216', date: '08 Apr 2025', time: '04:20 PM', total: 1120, status: 'Pending', items: 3, address: '90 Riverside Avenue, Ernakulam, Kerala - 682011', payment: 'Cash on delivery', products: [{ name: 'Green Cardamom', quantity: 2, price: 450, imagePosition: '44% 56%' }] },
-]
 
-const statusFilters = [
-  { label: 'All Orders', count: '124' },
-  { label: 'Pending', count: '8' },
-  { label: 'Shipped', count: '96' },
-  { label: 'Delivered', count: '18' },
-]
+//formate the date
+const formatOrderCreatedAt = (createdAt) => {
+  const date = new Date(createdAt)
+  if (Number.isNaN(date.getTime())) {
+    return { date: 'Invalid date', time: '' }
+  }
 
-const summaryCards = [
-  { label: 'Total Orders', count: '124', note: '12% from last week', icon: faReceipt, tone: 'green', trend: 'up' },
-  { label: 'Pending', count: '8', note: '3% from last week', icon: faClock, tone: 'orange', trend: 'down' },
-  { label: 'Shipped', count: '96', note: '15% from last week', icon: faTruckFast, tone: 'green', trend: 'up' },
-  { label: 'Delivered', count: '18', note: '8% from last week', icon: faCircleCheck, tone: 'green', trend: 'up' },
-]
+  return {
+    date: date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata',
+    }),
+    time: date.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'Asia/Kolkata',
+    }),
+  }
+}
+
+
 
 function Adminorders() {
-  const [orders, setOrders] = useState(initialOrders)
-  const [selectedId, setSelectedId] = useState(initialOrders[0].id)
-  const [activeStatus, setActiveStatus] = useState('All Orders')
-  const [search, setSearch] = useState('')
-  const [dateRange, setDateRange] = useState('Last 30 days')
-  const [notice, setNotice] = useState('')
+  const [orders, setOrders] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [activeStatus, setActiveStatus] = useState(false)
+  const [dateRange, setDateRange] = useState('All Orders')
 
-  const visibleOrders = orders.filter((order) => {
-    const matchesStatus = activeStatus === 'All Orders' || order.status === activeStatus
-    const query = search.trim().toLowerCase()
-    const matchesSearch = !query || [order.id, order.customer, order.email].some((value) => value.toLowerCase().includes(query))
-    return matchesStatus && matchesSearch
-  })
-  const selectedOrder = orders.find((order) => order.id === selectedId) || visibleOrders[0]
+  const positionOrderMenu = (event) => {
+    const menuDetails = event.currentTarget
+    if (!menuDetails.open) return
 
-  const updateOrderStatus = (orderId) => {
-    setOrders((current) => current.map((order) => (
-      order.id === orderId
-        ? { ...order, status: order.status === 'Pending' ? 'Shipped' : order.status === 'Shipped' ? 'Delivered' : 'Pending' }
-        : order
-    )))
-    setNotice('Order status updated')
+    const summary = menuDetails.querySelector('summary')
+    const menu = menuDetails.querySelector(':scope > div')
+    const summaryBounds = summary.getBoundingClientRect()
+    const menuWidth = menu.offsetWidth
+    const menuHeight = menu.offsetHeight
+    const left = Math.max(8, Math.min(summaryBounds.right - menuWidth, window.innerWidth - menuWidth - 8))
+    const top = summaryBounds.bottom + menuHeight + 8 > window.innerHeight
+      ? Math.max(8, summaryBounds.top - menuHeight - 4)
+      : summaryBounds.bottom + 4
+
+    menu.style.left = `${left}px`
+    menu.style.top = `${top}px`
   }
+  const [show, setShow] = useState(false);
+  const [viewOrder, SetViewOrder] = useState({})
+
+  const filteredOrders = orders.filter((order) => {
+    if (dateRange === 'All Orders') return true
+
+    const createdAt = new Date(order.createdAt)
+    if (Number.isNaN(createdAt.getTime())) return false
+
+    const now = new Date()
+    if (dateRange === 'This year') {
+      return createdAt.getFullYear() === now.getFullYear()
+    }
+
+    const days = Number.parseInt(dateRange.match(/\d+/)?.[0] || '30', 10)
+    const startDate = new Date(now)
+    startDate.setDate(startDate.getDate() - days)
+    return createdAt >= startDate && createdAt <= now
+  })
+
+  const ordersPerPage = 6
+  const pageCount = Math.ceil(filteredOrders.length / ordersPerPage)
+  const displayedPage = Math.min(currentPage, Math.max(1, pageCount))
+  const paginatedOrders = filteredOrders.slice(
+    (displayedPage - 1) * ordersPerPage,
+    displayedPage * ordersPerPage
+  )
+
+
+//close the view
+  const handleClose = () => setShow(false);
+
+  //view order
+  const handleShow = async (id) => {
+    // console.log(id);
+    const result = await getAOrdersApi(id)
+    // console.log(result);
+    SetViewOrder(result.data)
+
+    setShow(true)
+  };
+  // console.log(viewOrder);
+
+
+  const updateOrderStatus = async(order) => {
+    // console.log(order);
+    const result = await updateOrderStatusApi(order._id,{currentStatus:order.status})
+    // console.log(result);
+    if(result.status>=200 && result.status<300){
+      setActiveStatus(!activeStatus)
+    }
+    else{
+      toast.error("Something went wrong. Please try after sometime")
+    }
+    
+    
+  }
+
+  //get all
+  const getAllOrders = async () => {
+    const result = await getAllOrdersApi()
+    //  console.log(result);
+    if (result.status >= 200 && result.status < 300) {
+      setOrders(result.data)
+    }
+
+  }
+  // console.log(orders);
+
+  //delete order
+  const deleteOrder = async(id)=>{
+   const result = await deleteOrderApi(id)
+  //  console.log(result);
+   if(result.status>=200 && result.status<300){
+      setActiveStatus(!activeStatus)
+   }
+   else{
+     toast.error("Something went wrong")
+   }
+   
+  }
+
+  useEffect(() => {
+    getAllOrders()
+  }, [activeStatus])
 
   return (
     <div className="admin-page-shell">
       <Sidebar activeItem="Orders" />
       <main className="admin-page-content orders-page">
-        <div className="orders-topbar">
-          <label className="orders-search">
-            <FontAwesomeIcon icon={faMagnifyingGlass} aria-hidden="true" />
-            <input
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.currentTarget.value)}
-              placeholder="Search by order id, customer name or product..."
-              aria-label="Search orders"
-            />
-          </label>
-          <div className="orders-account-tools">
-            <button className="orders-notifications" type="button" aria-label="Notifications, 3 unread">
-              <FontAwesomeIcon icon={faBell} aria-hidden="true" />
-              <span>3</span>
-            </button>
-            <button className="orders-account" type="button">
-              <span className="orders-avatar">A</span>
-              <span>Admin</span>
-              <FontAwesomeIcon icon={faChevronDown} aria-hidden="true" />
-            </button>
-          </div>
-        </div>
+        <AdminHeader className="orders-topbar" />
 
         <header className="orders-heading">
           <div>
@@ -111,46 +161,67 @@ function Adminorders() {
         </header>
 
         <section className="orders-summary" aria-label="Order summary">
-          {summaryCards.map((card) => (
-            <article className={`orders-summary-card is-${card.tone}`} key={card.label}>
-              <span className="orders-summary-icon"><FontAwesomeIcon icon={card.icon} aria-hidden="true" /></span>
-              <div>
-                <p>{card.label}</p>
-                <strong>{card.count}</strong>
-                <small className={card.trend === 'down' ? 'is-down' : ''}>
-                  <FontAwesomeIcon icon={faArrowTrendUp} aria-hidden="true" /> {card.note}
-                </small>
-              </div>
-              <span className="orders-summary-leaf" aria-hidden="true">✦</span>
-            </article>
-          ))}
+
+          <article className="orders-summary-card" >
+            <span className="orders-summary-icon"><FontAwesomeIcon icon={faReceipt} aria-hidden="true" /></span>
+            <div>
+              <p>Total Orders</p>
+              <strong>{orders.length}</strong>
+
+            </div>
+            <FontAwesomeIcon className="orders-summary-leaf" icon={faLeaf} aria-hidden="true" />
+          </article>
+          <article className="orders-summary-card" >
+            <span className="orders-summary-icon"><FontAwesomeIcon icon={faClock} aria-hidden="true" /></span>
+            <div>
+              <p>Payment confirmed</p>
+              <strong>{orders.filter((item) => item.status == 'Payment Confirmed').length}</strong>
+
+            </div>
+            <FontAwesomeIcon className="orders-summary-leaf" icon={faLeaf} aria-hidden="true" />
+          </article>
+          <article className="orders-summary-card" >
+            <span className="orders-summary-icon"><FontAwesomeIcon icon={faTruckFast} aria-hidden="true" /></span>
+            <div>
+              <p>Shipped</p>
+              <strong>{orders.filter((item) => item.status == 'Shipped').length}</strong>
+
+            </div>
+            <FontAwesomeIcon className="orders-summary-leaf" icon={faLeaf} aria-hidden="true" />
+          </article>
+          <article className="orders-summary-card" >
+            <span className="orders-summary-icon"><FontAwesomeIcon icon={faCircleCheck} aria-hidden="true" /></span>
+            <div>
+              <p>Delivered</p>
+              <strong>{orders.filter((item) => item.status == 'Delivered').length}</strong>
+
+            </div>
+            <FontAwesomeIcon className="orders-summary-leaf" icon={faLeaf} aria-hidden="true" />
+          </article>
+
         </section>
 
         <div className="orders-workspace">
           <section className="orders-table-panel" aria-label="Orders list">
             <div className="orders-table-toolbar">
               <div className="orders-filter-tabs" role="tablist" aria-label="Filter orders by status">
-                {statusFilters.map((filter) => (
-                  <button
-                    className={activeStatus === filter.label ? 'is-active' : ''}
-                    key={filter.label}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeStatus === filter.label}
-                    onClick={() => setActiveStatus(filter.label)}
-                  >
-                    {filter.label}<span>{filter.count}</span>
-                  </button>
-                ))}
+                <p>All Orders</p>
               </div>
               <label className="orders-date-filter">
                 <FontAwesomeIcon icon={faClock} aria-hidden="true" />
-                <select value={dateRange} onChange={(event) => setDateRange(event.currentTarget.value)} aria-label="Order date range">
+                <select
+                  value={dateRange}
+                  onChange={(event) => {
+                    setDateRange(event.currentTarget.value)
+                    setCurrentPage(1)
+                  }}
+                  aria-label="Order date range"
+                >
+                  <option>All Orders</option>
                   <option>Last 30 days</option>
                   <option>Last 7 days</option>
                   <option>This year</option>
                 </select>
-                <FontAwesomeIcon icon={faChevronDown} aria-hidden="true" />
               </label>
             </div>
 
@@ -158,7 +229,6 @@ function Adminorders() {
               <table className="orders-table">
                 <thead>
                   <tr>
-                    <th><span className="orders-checkbox" aria-label="Orders" /></th>
                     <th>Order ID</th>
                     <th>Customer</th>
                     <th>Date</th>
@@ -168,101 +238,125 @@ function Adminorders() {
                   </tr>
                 </thead>
                 <tbody>
-                  {visibleOrders.map((order) => (
-                    <tr className={selectedOrder?.id === order.id ? 'is-selected' : ''} key={order.id} onClick={() => setSelectedId(order.id)}>
-                      <td><span className="orders-checkbox" aria-hidden="true" /></td>
-                      <td>
-                        <div className="orders-product-cell">
-                          <img src="/assets/hero_IMAGE.png" alt="" style={{ objectPosition: order.products[0].imagePosition }} />
-                          <span><strong>#{order.id}</strong><small>{order.items} items</small></span>
-                        </div>
-                      </td>
-                      <td><span className="orders-customer-cell"><strong>{order.customer}</strong><small>{order.email}</small></span></td>
-                      <td><span className="orders-date-cell">{order.date}<small>{order.time}</small></span></td>
-                      <td className="orders-total-cell">₹ {order.total.toLocaleString('en-IN')}</td>
-                      <td><span className={`orders-status is-${order.status.toLowerCase()}`}>{order.status}</span></td>
-                      <td>
-                        <div className="orders-row-actions" onClick={(event) => event.stopPropagation()}>
-                          <button type="button" aria-label={`View order ${order.id}`} onClick={() => setSelectedId(order.id)}>
-                            <FontAwesomeIcon icon={faEye} aria-hidden="true" />
-                          </button>
-                          <details className="orders-more-menu">
-                            <summary aria-label={`More actions for ${order.id}`}><FontAwesomeIcon icon={faEllipsisVertical} aria-hidden="true" /></summary>
-                            <div>
-                              <button type="button" onClick={() => setSelectedId(order.id)}>View details</button>
-                              <button type="button" onClick={() => updateOrderStatus(order.id)}>Advance status</button>
-                            </div>
-                          </details>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                  {visibleOrders.length === 0 && (
-                    <tr><td className="orders-empty-state" colSpan="7">No orders match your search.</td></tr>
+                  {paginatedOrders.map((order) => {
+                    const createdAt = formatOrderCreatedAt(order.createdAt)
+                    return (
+                      <tr key={order._id}>
+                        <td style={{ backgroundColor: 'white' }}>
+                          <div className="orders-product-cell">
+                            <span><strong># {order.orderId}</strong><small>{order.products.map((item) => item.title)}</small></span>
+                          </div>
+                        </td>
+                        <td style={{ backgroundColor: 'white' }}><span className="orders-customer-cell"><strong>{order.name}</strong><small>{order.email}</small></span></td>
+                        <td style={{ backgroundColor: 'white' }}><span className="orders-date-cell">{createdAt.date}<small>{createdAt.time}</small></span></td>
+                        <td style={{ backgroundColor: 'white' }} className="orders-total-cell">₹ {order.TotalAmount}</td>
+                        <td style={{ backgroundColor: 'white' }} ><span className={order.status=='Placed'?'orderstatusPlaced':order.status=='Payment Confirmed'?'orderstatusPayment':order.status=='Shipped'?'orderstatusShipped':'orderstatusDeli'}>{order.status}</span></td>
+                        <td style={{ backgroundColor: 'white' }}>
+                          <div className="orders-row-actions" onClick={(event) => event.stopPropagation()}>
+                            <button type="button" onClick={() => handleShow(order._id)}>
+                              <FontAwesomeIcon className='text-primary' icon={faEye} aria-hidden="true" />
+                            </button>
+                            <details className="orders-more-menu" onToggle={positionOrderMenu}>
+                              <summary aria-label={`More actions for ${order.id}`}><FontAwesomeIcon icon={faEllipsisVertical} aria-hidden="true" /></summary>
+                              <div>
+                                <button type="button" onClick={() => updateOrderStatus(order)}>
+                                  Advance status
+                                </button>
+                                <button type="button" className='text-danger' onClick={() => deleteOrder(order._id)}>Delete</button>
+
+                              </div>
+                            </details>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                  {filteredOrders.length === 0 && (
+                    <tr><td className="orders-empty-state" colSpan="7">No orders found in this date range.</td></tr>
                   )}
                 </tbody>
               </table>
             </div>
 
-            <footer className="orders-table-footer">
-              <p aria-live="polite">{visibleOrders.length ? `Showing 1–${visibleOrders.length} of ${activeStatus === 'All Orders' ? '124' : statusFilters.find((filter) => filter.label === activeStatus)?.count} orders` : 'No orders to display'}{notice ? ` · ${notice}` : ''}</p>
-              <nav className="orders-pagination" aria-label="Orders pages">
-                <button type="button" disabled aria-label="Previous page"><FontAwesomeIcon icon={faChevronLeft} aria-hidden="true" /></button>
-                <button className="is-active" type="button" aria-current="page">1</button>
-                <button type="button" disabled>2</button>
-                <button type="button" disabled>3</button>
-                <button type="button" disabled>4</button>
-                <button type="button" disabled>5</button>
-                <button type="button" disabled aria-label="Next page"><FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></button>
+            {pageCount > 1 && (
+              <nav className="orders-pagination" aria-label="Order pages">
+                <button type="button" onClick={() => setCurrentPage(displayedPage - 1)} disabled={displayedPage === 1}>
+                  Previous
+                </button>
+                {Array.from({ length: pageCount }, (_, index) => index + 1).map((pageNumber) => (
+                  <button
+                    type="button"
+                    key={pageNumber}
+                    onClick={() => setCurrentPage(pageNumber)}
+                    aria-label={`Order page ${pageNumber}`}
+                    aria-current={pageNumber === displayedPage ? 'page' : undefined}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+                <button type="button" onClick={() => setCurrentPage(displayedPage + 1)} disabled={displayedPage === pageCount}>
+                  Next
+                </button>
               </nav>
-            </footer>
+            )}
           </section>
 
-          {selectedOrder && (
-            <aside className="orders-detail-panel" aria-label={`Details for order ${selectedOrder.id}`}>
-              <div className="orders-detail-heading">
-                <div>
-                  <h2>Order #{selectedOrder.id}</h2>
-                  <p>{selectedOrder.date} <span>·</span> {selectedOrder.items} items <span>·</span> ₹ {selectedOrder.total.toLocaleString('en-IN')}</p>
-                </div>
-                <span className={`orders-status is-${selectedOrder.status.toLowerCase()}`}>{selectedOrder.status}</span>
-              </div>
 
-              <section className="orders-detail-section">
-                <div className="orders-detail-section-title"><FontAwesomeIcon icon={faUser} aria-hidden="true" /><strong>Customer Details</strong><Link to="/admin/customers">View Profile</Link></div>
-                <div className="orders-customer-detail"><span className="orders-customer-avatar">{selectedOrder.customer.charAt(0)}</span><div><strong>{selectedOrder.customer}</strong><p>{selectedOrder.email} <span>·</span> {selectedOrder.phone}</p></div></div>
-              </section>
 
-              <section className="orders-detail-section">
-                <div className="orders-detail-section-title"><FontAwesomeIcon icon={faLocationDot} aria-hidden="true" /><strong>Shipping Address</strong><button type="button" onClick={() => setNotice('Address edit is not available in this preview')}>Edit</button></div>
-                <p className="orders-address">{selectedOrder.address}</p>
-              </section>
-
-              <section className="orders-detail-section">
-                <div className="orders-detail-section-title"><FontAwesomeIcon icon={faBoxOpen} aria-hidden="true" /><strong>Payment Method</strong></div>
-                <p className="orders-payment">{selectedOrder.payment}</p>
-              </section>
-
-              <section className="orders-detail-section orders-items-section">
-                <div className="orders-detail-section-title"><strong>Order Items</strong><span>{selectedOrder.items} items</span></div>
-                <div className="orders-item-list">
-                  {selectedOrder.products.map((product) => (
-                    <div className="orders-detail-item" key={product.name}>
-                      <img src="/assets/hero_IMAGE.png" alt="" style={{ objectPosition: product.imagePosition }} />
-                      <div><strong>{product.name}</strong><small>Qty: {product.quantity} <span>·</span> ₹ {product.price}</small></div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <div className="orders-detail-actions">
-                <button type="button" onClick={() => setNotice(`Invoice for ${selectedOrder.id} is ready to print`)}><FontAwesomeIcon icon={faPrint} aria-hidden="true" />Print Invoice</button>
-                <button type="button" onClick={() => updateOrderStatus(selectedOrder.id)}><FontAwesomeIcon icon={faTruckFast} aria-hidden="true" />Track Order</button>
-              </div>
-            </aside>
-          )}
         </div>
       </main>
+
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header>
+          <Modal.Title style={{fontFamily:'Playfair Display, serif'}}>View Order</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+               <aside className="orders-detail-panel" aria-label={`Details for order`}>
+              <div className="orders-detail-heading">
+                <div>
+                  <h2 style={{fontFamily:'var(--display)'}}>Order : {viewOrder.orderId}</h2>
+                  <p>{formatOrderCreatedAt(viewOrder.createdAt).date} <span>·</span>items :  {viewOrder.products?.length} <span>·</span> ₹ {viewOrder.TotalAmount}</p>
+                </div>
+                <span>{viewOrder.status}</span>
+              </div>
+
+              <section className="orders-detail-section">
+                <div className="orders-detail-section-title"><FontAwesomeIcon icon={faUser} aria-hidden="true" /><strong>Customer Details</strong></div>
+                <div className="orders-customer-detail"><span className="orders-customer-avatar">{viewOrder.name?.charAt(0).toUpperCase()}</span><div><strong>{viewOrder.name}</strong><p>{viewOrder.email} <span>·</span> {viewOrder.address?.mobileno}</p></div></div>
+              </section>
+
+              <section className="orders-detail-section">
+                <div className="orders-detail-section-title"><FontAwesomeIcon icon={faLocationDot} aria-hidden="true" /><strong>Shipping Address</strong></div>
+                <p className="orders-address">{viewOrder.address?.flat}, {viewOrder.address?.landmark}, {viewOrder.address?.street} {viewOrder.address?.city}, {viewOrder.address?.state}, {viewOrder.address?.pincode} <br/> {viewOrder.address?.mobileno}</p>
+              </section>
+
+
+              <section className="orders-detail-section orders-items-section">
+                <div className="orders-detail-section-title"><strong>Order Items</strong><span>items {viewOrder.products?.length}</span></div>
+                <div className="orders-item-list">
+                  {viewOrder.products?.map((product) => (
+                    <div className="orders-detail-item" key={product.name}>
+                      <img src={`${serverUrl}/uploads/${product.image}`} alt="" style={{ objectPosition: product.imagePosition }} />
+                      <div><span>{product.title}</span><strong>{product.name}</strong><small>Qty : {product.quantity} <span>·</span> ₹ {product.price}</small> <small> count :  {product.count}</small></div>
+                    </div>
+                  ))} 
+                </div>
+                <p className='mt-4'>Total Amount : {viewOrder.TotalAmount}</p>
+              </section>
+
+            
+            </aside>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className='btn btn-outline-warning border-1 border-warning' onClick={handleClose}>
+            Close
+          </button>
+          
+        </Modal.Footer>
+      </Modal>
+
+       <ToastContainer position='top-right' autoClose={3000} theme='colored' />
     </div>
   )
 }

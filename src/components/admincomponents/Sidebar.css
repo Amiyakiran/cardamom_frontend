@@ -123,13 +123,15 @@
     transition: background-color .18s ease, transform .18s ease;
 }
 
-.admin-sidebar-design__nav a:hover,
 .admin-sidebar-design__nav a.is-active {
     background: #258f5a;
 }
 
-.admin-sidebar-design__nav a:hover {
-    transform: translateX(2px);
+@media (hover: hover) and (pointer: fine) {
+    .admin-sidebar-design__nav a:hover {
+        background: #258f5a;
+        transform: translateX(2px);
+    }
 }
 
 .admin-sidebar-design__nav a>svg:first-child {

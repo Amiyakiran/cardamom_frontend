@@ -69,7 +69,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
 
   //login function
   const handleLogin = async () => {
-    console.log("login clicked")
+    // console.log("login clicked")
     if (!email || !password) {
       toast.info("Please fill all the fields")
       return
@@ -112,7 +112,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
     const reqBody = { "name": decodedUser.name, "email": decodedUser.email, "password": "googlepswd", remember }
 
     const result = await googleLoginApi(reqBody)
-     console.log(result);
+    //  console.log(result);
     if (result.status === 200) {
       checkAuth()
       toast.success("Login successful!")
@@ -155,7 +155,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
   //RESET PASSWORD
   const handleResetPassword = async () => {
     const { token } = params
-    console.log(token, password, confirmPassword, email);
+    // console.log(token, password, confirmPassword, email);
 
     if (!token || !password || !confirmPassword || !email) {
       toast.info('Please fill all fields')
@@ -167,7 +167,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
       else {
 
         const result = await resetPasswordApi({ email, password: confirmPassword }, token)
-        console.log(result);
+        // console.log(result);
         if (result.status >= 200 && result.status < 300) {
           toast.success(result.data.message)
           setTimeout(() => {
@@ -351,11 +351,11 @@ export default function Login({ register, forgetPassword, reset_password }) {
                 // <button className="btn ghost" type="button"><FontAwesomeIcon icon={faUser} /> LOGIN WITH GOOGLE</button>
                 <GoogleLogin className="google" width={'500px'}
                   onSuccess={credentialResponse => {
-                    console.log(credentialResponse);
+                    // console.log(credentialResponse);
                     handleLoginSuccess(credentialResponse)
                   }}
                   onError={() => {
-                    console.log('Login Failed');
+                    // console.log('Login Failed');
 
                   }}
                 />

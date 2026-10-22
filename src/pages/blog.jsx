@@ -5,6 +5,7 @@ import Footer from '../components/Footer'
 import { getABlogApi, getAllBlogApi } from '../services/allApi'
 import { serverUrl } from '../services/serverUrl'
 import Offcanvas from 'react-bootstrap/Offcanvas';
+import { toast,ToastContainer } from 'react-toastify'
 
 
 const categories = [
@@ -33,11 +34,14 @@ export default function Blog() {
   ]
   const [show, setShow] = useState(false);
   const [viewBlog, setViewBlog] = useState({})
+
+
+
   const handleClose = () => setShow(false);
   const handleShow = async (id) => {
     setShow(true);
     const result = await getABlogApi(id)
-    console.log(result);
+    // console.log(result);
     setViewBlog(result.data)
 
   }
@@ -61,6 +65,10 @@ export default function Blog() {
 
     return matchesCategory && matchesSearch
   })
+
+  const handleSubscribe= ()=>{
+      toast.info('Currently not available')
+  }
 
   useEffect(() => {
     let isMounted = true
@@ -185,10 +193,11 @@ export default function Blog() {
               <span className="mail-icon">✉</span>
               <input type="email" placeholder="Your email address" />
             </div>
-            <button type="button">Subscribe →</button>
+            <button onClick={handleSubscribe} type="button">Subscribe →</button>
           </div>
         </aside>
       </main>
+                <ToastContainer position='top-right' autoClose={3000} theme='colored' />
 
       <Offcanvas show={show} onHide={handleClose} placement='top'  className="custom-offcanvas p-5">
         <img src="./assets/ggs1.png" alt="logo" style={{width:'50px', height:'50px', marginLeft:'10px'}} />

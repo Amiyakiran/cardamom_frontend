@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell,faCheckCircle, faChevronDown, faCloudArrowUp, faEdit,faFileLines, faLeaf,  faMagnifyingGlass, faTrash, faXmark, } from '@fortawesome/free-solid-svg-icons'
+import { faBell,faCheckCircle, faCloudArrowUp, faEdit,faFileLines, faLeaf,  faMagnifyingGlass, faTrash, faXmark, } from '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-bootstrap/Modal';
 import Sidebar from '../../components/admincomponents/Sidebar'
+import AdminHeader from '../../components/admincomponents/AdminHeader'
 import './Blog.css'
 import { addBlogApi, deleteBlogApi, getABlogApi, getAllBlogApi, updateBlogApi } from '../../services/allApi'
 import { ToastContainer, toast } from 'react-toastify';
@@ -190,7 +191,7 @@ function Blog() {
 
         try {
             const result = await addBlogApi(reqBody, { "Content-Type": "multipart/form-data" })
-            console.log(result);
+            // console.log(result);
             if (result.status >= 200 && result.status < 300) {
                 setTableChangeStatus(!tableChangeStatus)
                 toast.success(result.data.message)
@@ -224,17 +225,7 @@ function Blog() {
         <div className="admin-page-shell admin-blog-page">
             <Sidebar activeItem="Blog" />
             <main className="admin-blog-content">
-                <header className="admin-blog-topbar">
-
-                    <div className="admin-account">
-                        <button type="button" aria-label="Notifications">
-                            <FontAwesomeIcon icon={faBell} />
-                            <b>3</b>
-                        </button>
-                        <span className="admin-account-avatar">A</span>
-                        <strong>Admin</strong>
-                        <FontAwesomeIcon icon={faChevronDown} /></div>
-                </header>
+                <AdminHeader className="admin-blog-topbar" />
 
                 <section className="admin-blog-main">
                     <div className="admin-blog-heading">
@@ -308,7 +299,7 @@ function Blog() {
                                                 <td>{post.publishDate || '—'}</td>
                                                 <td><span className={`blog-status ${(post.status || '').toLowerCase()}`}>{post.status}</span></td>
                                                 <td>
-                                                    <div className="blog-row-actions">
+                                                    <div className="blog-row-actions1">
                                                         <button type="button" aria-label="Edit">
                                                             <FontAwesomeIcon icon={faEdit} onClick={() => handleShow(post._id)} />
                                                         </button>

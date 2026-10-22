@@ -8,12 +8,7 @@ import { getHomeProductsApi } from '../services/allApi'
 import { useState , useEffect, useRef } from 'react'
 import { serverUrl } from '../services/serverUrl'
 
-// const products = [
-//   ['Premium Green Cardamom', 'Bold aroma · Rich flavor'],
-//   ['Farm Fresh Packaging', 'Long lasting freshness'],
-//   ['Whole Pods', '100% natural · No additives'],
- 
-// ]
+
 
 function Home() {
 
@@ -25,7 +20,7 @@ function Home() {
     // console.log(result);
      setProducts(result?.data)
   }
-  console.log(products);
+  // console.log(products);
   
 
 useEffect(()=>{

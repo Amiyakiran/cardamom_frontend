@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faCircleExclamation, faPenToSquare, faBagShopping, faBoxOpen, faCreditCard, faEnvelope, faHeart, faLocationDot, faTrashCan, faShoppingBag, faMinus } from '@fortawesome/free-solid-svg-icons'
 import Header from '../components/Header'
 import { AuthContext } from '../context/ContextShare'
-import { addToCartApi, decrementProductCountApi, deleteAddressApi, deleteFromCartApi, deleteFromWishlistApi, emptyCartApi, getAllCartItemApi, getAllWishlistProductApi, getMeApi, incrementProductCountApi, placeOrderApi, UpdateAdressApi, updateProductQuantityApi, updateProfileImageApi } from '../services/allApi'
+import { addToCartApi, decrementProductCountApi, deleteAddressApi, deleteFromCartApi, deleteFromWishlistApi, emptyCartApi, getAllCartItemApi, getallUserOrderApi, getAllWishlistProductApi, getMeApi, incrementProductCountApi, placeOrderApi, UpdateAdressApi, updateProductQuantityApi, updateProfileImageApi } from '../services/allApi'
 import './Profile.css'
 import Footer from '../components/Footer'
 import { serverUrl } from '../services/serverUrl'
@@ -12,6 +12,25 @@ import { ToastContainer, toast } from 'react-toastify';
 import Modal from 'react-bootstrap/Modal';
 
 
+const formatOrderDate = (createdAt) => {
+  const date = new Date(createdAt)
+  return Number.isNaN(date.getTime())
+    ? 'Date unavailable'
+    : date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata',
+    })
+}
+
+const orderProgressSteps = ['Placed', 'Payment Confirmed', 'Shipped', 'Delivered']
+const getOrderProgressIndex = (status) => {
+  const normalizedStatus = String(status || '').trim().toLowerCase()
+  const displayStatus = normalizedStatus === 'pending' ? 'placed' : normalizedStatus
+  const index = orderProgressSteps.findIndex((step) => step.toLowerCase() === displayStatus)
+  return index < 0 ? 0 : index
+}
 
 export default function Profile() {
 
@@ -21,37 +40,41 @@ export default function Profile() {
   const [profileLoading, setProfileLoading] = useState(true)
   const [wishlistArray, setWishListArray] = useState([])
   const [wishlistPage, setWishlistPage] = useState(1)
+  const [ordersPage, setOrdersPage] = useState(1)
   const [cartArray, setCartArray] = useState([])
+  const [userOrders, setUserOrders] = useState([])
+  const [ordersLoading, setOrdersLoading] = useState(false)
   const [deleteStatus, setDeleteStatus] = useState(false)
   const [show, setShow] = useState(false);
   const [addressSaving, setAddressSaving] = useState(false)
   const [addressValidationVisible, setAddressValidationVisible] = useState({})
-  const [address, setAddress] = useState({
-    fullname: "",
-    mobileno: "",
-    flat: "",
-    street: "",
-    landmark: "",
-    city: "",
-    state: "",
-    pincode: ""
-  })
+  const [address, setAddress] = useState({ fullname: "", mobileno: "", flat: "", street: "", landmark: "", city: "", state: "", pincode: "" })
   const [confirmedAddress, setConfirmedAddress] = useState(null)
+  const [show1, setShow1] = useState(false);
 
   // console.log(profile);
   // console.log(address);
-  const [show1, setShow1] = useState(false);
+   // console.log(wishlistArray);
+
+
+  //functions
 
   const handleClose1 = () => {
     setShow1(false)
     setConfirmedAddress(null)
   }
+
+
   const handleShow1 = () => {
-    setConfirmedAddress(null)
+    if(cartArray.length==0){
+        toast.error('Please add Product to place order')
+    }else{
+      setConfirmedAddress(null)
     setShow1(true)
+    }
   }
 
-  //functions
+
   const handleClose = () => {
     if (addressSaving) return
     setShow(false)
@@ -92,10 +115,21 @@ export default function Profile() {
     (currentWishlistPage - 1) * wishlistPageSize,
     currentWishlistPage * wishlistPageSize
   )
+  const sortedOrders = [...userOrders].sort((first, second) => {
+    const firstDate = new Date(first.createdAt).getTime()
+    const secondDate = new Date(second.createdAt).getTime()
+    if (Number.isNaN(firstDate)) return Number.isNaN(secondDate) ? 0 : 1
+    if (Number.isNaN(secondDate)) return -1
+    return secondDate - firstDate
+  })
+  const ordersPageSize = 2
+  const ordersPageCount = Math.ceil(userOrders.length / ordersPageSize)
+  const currentOrdersPage = Math.min(ordersPage, Math.max(1, ordersPageCount))
+  const paginatedOrders = sortedOrders.slice(
+    (currentOrdersPage - 1) * ordersPageSize,
+    currentOrdersPage * ordersPageSize
+  )
 
-  useEffect(() => {
-    setWishlistPage((page) => Math.min(page, Math.max(1, wishlistPageCount)))
-  }, [wishlistPageCount])
 
   //function to get all wishlist 
   const getWishlist = async () => {
@@ -105,12 +139,12 @@ export default function Profile() {
 
   }
 
-  // console.log(wishlistArray);
+
 
   //function to get all cart product
   const getAllCartItem = async () => {
     const result = await getAllCartItemApi(userId)
-    console.log(result);
+    // console.log(result);
     setCartArray(result.data.allcartProduct)
 
   }
@@ -132,7 +166,7 @@ export default function Profile() {
   //add to cart
   const addToCart = async (pro) => {
     const result = await addToCartApi(userId, pro)
-    console.log(result);
+    // console.log(result);
 
     if (result.status >= 200 && result.status < 300) {
       await deleteFromWishlistApi(pro.productid, { userId: userId })
@@ -144,11 +178,10 @@ export default function Profile() {
     }
   }
 
-
   //delete from cart
   const deleteFromCart = async (productid) => {
     const result = await deleteFromCartApi(productid, { userId })
-    console.log(result);
+    // console.log(result);
     if (result.status >= 200 && result.status < 300) {
       toast.success("Deleted Successfully")
       setDeleteStatus(!deleteStatus)
@@ -162,7 +195,7 @@ export default function Profile() {
   //increment the product Count
   const incrementProductCount = async (productid) => {
     const result = await incrementProductCountApi(productid, { userId })
-    console.log(result);
+    // console.log(result);
 
     if (result.status >= 200 && result.status < 300) {
       setDeleteStatus(!deleteStatus)
@@ -176,7 +209,7 @@ export default function Profile() {
   //decrement the product Count
   const decrementProductCount = async (productid) => {
     const result = await decrementProductCountApi(productid, { userId })
-    console.log(result);
+    // console.log(result);
 
     if (result.status >= 200 && result.status < 300) {
       setDeleteStatus(!deleteStatus)
@@ -189,9 +222,9 @@ export default function Profile() {
 
   //update quantity
   const updateQuantity = async (productid, quantity) => {
-    console.log(productid, quantity);
+    // console.log(productid, quantity);
     const result = await updateProductQuantityApi(productid, { userId, quantity })
-    console.log(result);
+    // console.log(result);
     if (result.status >= 200 && result.status < 300) {
       setDeleteStatus(!deleteStatus)
     }
@@ -203,7 +236,7 @@ export default function Profile() {
 
   //update profile image
   const updateProfileImage = async (profileImage) => {
-    console.log(profileImage);
+    // console.log(profileImage);
     const reqBody = new FormData()
     reqBody.append("image", profileImage)
 
@@ -211,7 +244,7 @@ export default function Profile() {
       "Content-Type": "multipart/form-data"
     }
     const result = await updateProfileImageApi(userId, reqBody, header)
-    console.log(result);
+    // console.log(result);
     if (result.status >= 200 && result.status < 300) {
       setProfile({ ...profile, photo: result.data.photo })
     } else {
@@ -292,42 +325,66 @@ export default function Profile() {
     if (result.status >= 200 && result.status < 300) {
       toast.success(result.data.message)
       handleClose1()
+      getUserOrders(profile.email)
       let phone = '+918113804245'
+      let Daddress = result.data.order.address
       const message = `
-                    🛒 *New Order*
+🛒 *Order Details*
 
 Order ID: ${result.data.order.orderId}
 Total items : ${result.data.order.products.length}
 Amount: ₹${result.data.order.TotalAmount}
 Placed Date: ${new Date(result.data.order.createdAt).toLocaleString('en-IN', {
-          dateStyle: 'medium',
-          timeStyle: 'short',
-          timeZone: 'Asia/Kolkata',
-        })}
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone: 'Asia/Kolkata',
+      })}
+Delivery Address: ${Daddress.flat} ${Daddress.landmark} ${Daddress.street} ${Daddress.city} ${Daddress.state}, ${Daddress.pincode}, ${Daddress.mobileno}
+
 
 Please follow the provided instructions to complete your payment. Kindly include your **Order ID** in the payment reference or remarks, and share a screenshot of the successful transaction for verification. Your order will be confirmed once the payment has been received and verified.
                     `;
 
-        const whatsappURL = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+      const whatsappURL = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
       window.open(whatsappURL, "_blank");
       handleClose1()
-        const clearCartResult = await emptyCartApi(userId)
-        if (clearCartResult?.status >= 200 && clearCartResult?.status < 300) {
-          setCartArray([])
-        } else {
-          toast.error(
-            clearCartResult?.response?.data?.message ||
-            'Order placed, but we could not clear your cart. Please try again.'
-          )
-        }
+      const clearCartResult = await emptyCartApi(userId)
+      if (clearCartResult?.status >= 200 && clearCartResult?.status < 300) {
+        setCartArray([])
+      } else {
+        toast.error(
+          clearCartResult?.response?.data?.message ||
+          'Order placed, but we could not clear your cart. Please try again.'
+        )
+      }
     }
     else {
       toast.error("Something went wrong")
     }
   }
 
+  //get user orders
+  const getUserOrders = async (email) => {
+    if (!email) return
+
+    setOrdersLoading(true)
+    const result = await getallUserOrderApi(email)
+    if (result?.status >= 200 && result.status < 300 && Array.isArray(result.data)) {
+      setUserOrders(result.data)
+      setOrdersPage(1)
+    } else {
+      setUserOrders([])
+      setOrdersPage(1)
+      toast.error(result?.response?.data?.message || 'Unable to load your orders')
+    }
+    setOrdersLoading(false)
+  }
+
   //useEffects
+  useEffect(() => {
+    setWishlistPage((page) => Math.min(page, Math.max(1, wishlistPageCount)))
+  }, [wishlistPageCount])
 
   useEffect(() => {
     if (loading) return undefined
@@ -355,6 +412,8 @@ Please follow the provided instructions to complete your payment. Kindly include
     }
 
     loadProfile()
+
+
     return () => { isCurrent = false }
   }, [loading, user])
 
@@ -365,7 +424,11 @@ Please follow the provided instructions to complete your payment. Kindly include
     }
   }, [deleteStatus, userId])
 
-
+  useEffect(() => {
+    if (profile?.email) {
+      getUserOrders(profile.email)
+    }
+  }, [profile?.email, user])
 
 
 
@@ -537,7 +600,75 @@ Please follow the provided instructions to complete your payment. Kindly include
 
               <section className="profile-card profile-info-card" id="orders">
                 <div className="profile-card-heading"><h2> Orders History</h2><FontAwesomeIcon icon={faBoxOpen} aria-hidden="true" /></div>
-                <p className="profile-empty-copy">Your order history will appear here once you’ve placed an order.</p>
+                {ordersLoading ? (
+                  <p className="profile-empty-copy" role="status">Loading your orders...</p>
+                ) : userOrders.length === 0 ? (
+                  <p className="profile-empty-copy">Your order history will appear here once you’ve placed an order.</p>
+                ) : (
+                  <div className="profile-order-list">
+                    {paginatedOrders.map((order) => (
+                      <article className="profile-order-item" key={order._id || order.orderId}>
+                        <div className="profile-order-summary">
+                          <strong>Order #{order.orderId}</strong>
+                          <span>{formatOrderDate(order.createdAt)}</span>
+                        </div>
+                        <div className="profile-order-summary">
+                         <div>
+                           {order.products.map((item)=>(
+                              <span style={{fontSize:'10px'}}>{item.title} -{item.quantity}g - {item.count} </span>
+                            ))}
+                         </div>
+                          <strong className="profile-order-status">Total : ₹{order.TotalAmount}</strong>
+                        </div>
+                        <div>
+                          <p className='text-success' style={{fontSize:'12px', fontWeight:600}}>Status</p>
+                          <ol className="profile-order-stepper" aria-label={`Order status: ${order.status || 'Placed'}`}>
+                            {orderProgressSteps.map((step, index) => {
+                              const currentStep = getOrderProgressIndex(order.status)
+                              const stepState = index < currentStep
+                                ? 'is-complete'
+                                : index === currentStep
+                                  ? 'is-current'
+                                  : ''
+
+                              return (
+                                <li className={`profile-order-step ${stepState}`} key={step} aria-current={index === currentStep ? 'step' : undefined}>
+                                  <span className="profile-order-step-marker">{index + 1}</span>
+                                  <span className="profile-order-step-label">{step}</span>
+                                </li>
+                              )
+                            })}
+                          </ol>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+                {ordersPageCount > 1 && (
+                  <nav className="profile-pagination" aria-label="Order history pages">
+                    <button
+                      type="button"
+                      onClick={() => setOrdersPage(currentOrdersPage - 1)}
+                      disabled={currentOrdersPage === 1}
+                      aria-label="Previous order history page"
+                    >Previous</button>
+                    {Array.from({ length: ordersPageCount }, (_, index) => index + 1).map((page) => (
+                      <button
+                        type="button"
+                        key={page}
+                        onClick={() => setOrdersPage(page)}
+                        aria-label={`Order history page ${page}`}
+                        aria-current={page === currentOrdersPage ? 'page' : undefined}
+                      >{page}</button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setOrdersPage(currentOrdersPage + 1)}
+                      disabled={currentOrdersPage === ordersPageCount}
+                      aria-label="Next order history page"
+                    >Next</button>
+                  </nav>
+                )}
               </section>
             </section>
 

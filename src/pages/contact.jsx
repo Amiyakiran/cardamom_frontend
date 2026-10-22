@@ -16,18 +16,11 @@ const contactDetails = [
   { icon: faClock, label: 'Delivery Time', value: 'Mondays: 8am - 1pm\nWednesdays: 8am - 1pm\nFridays: 8am - 1pm' },
 ]
 
-const trustPoints = [
-  ['◒', 'NATURAL', '100% Pure Cardamom'],
-  ['✥', 'PREMIUM QUALITY', 'Carefully Selected'],
-  ['♡', 'HANDPICKED', 'With Care & Expertise'],
-  ['♢', 'TRUSTED GLOBALLY', 'From India to the World'],
-]
 
 export default function Contact() {
   const mainRef = useRef(null)
   const [sent, setSent] = useState(0)
-  const [status, setStatus] = useState('')
-  const [loading, setLoading] = useState(false)
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',

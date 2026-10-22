@@ -116,6 +116,23 @@ export const getHomeProductsApi = async () => {
     return error
   }
 }
+
+//delete order
+export const deleteOrderApi = async (id) => {
+  try {
+    return await commonApi('DELETE', `${serverUrl}/delete_order/${id}`)
+  } catch (error) {
+    return error
+  }
+}
+
+
+
+
+
+
+
+
 //----------------------------------------------------------
 
 //---------------------------customer--------------------------
@@ -270,6 +287,22 @@ export const emptyCartApi = async(id)=>{
     return error
   }
 }
+
+//get all user orders
+export const getallUserOrderApi = async(email)=>{
+  try {
+    return await commonApi('GET', `${serverUrl}/get-user-orders?email=${encodeURIComponent(email)}`)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+
+
+
+
+
 //----------------------------------------------------------
 
 //admin
@@ -353,6 +386,63 @@ export const deleteAUsersApi = async (id) => {
   try {
     return await commonApi('DELETE', `${serverUrl}/delete_user/${id}`)
 
+  } catch (error) {
+    return error
+  }
+}
+//get all orders
+export const getAllOrdersApi = async()=>{
+  try {
+    return await commonApi('GET', `${serverUrl}/all-orders`)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+//get a particular order
+export const getAOrdersApi = async(id)=>{
+  try {
+    return await commonApi('GET', `${serverUrl}/get-particular-orders/${id}`)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+//update order status
+export const updateOrderStatusApi = async(id, body)=>{
+  try {
+    return await commonApi('PUT', `${serverUrl}/update-order-status/${id}`,body)
+    
+  } catch (error) {
+    return error
+  }
+}
+
+//inventory reports
+export const addInventoryApi = async (body) => {
+  try {
+    return await commonApi('POST', `${serverUrl}/add-inventory`, body)
+  } catch (error) {
+    return error
+  }
+}
+
+//get all inventory report
+export const getAllInventoriesApi = async () => {
+  try {
+    return await commonApi('GET', `${serverUrl}/inventories`)
+  } catch (error) {
+    return error
+  }
+}
+
+//delete invemtory report
+
+export const deleteInventoryApi = async (id) => {
+  try {
+    return await commonApi('DELETE', `${serverUrl}/delete-inventory/${id}`)
   } catch (error) {
     return error
   }

@@ -1,11 +1,28 @@
 import React from 'react'
 import Sidebar from '../../components/admincomponents/Sidebar'
-import { useMemo, useState,  useEffect } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAlignLeft, faBell, faBold, faCalendarDays, faCheckCircle, faChevronDown, faCloudArrowUp, faEdit, faEllipsisVertical, faEye, faFileLines, faImage, faItalic, faLeaf, faLink, faList, faMagnifyingGlass, faPlus, faTrash, faUnderline, faXmark,faUserSlash } from '@fortawesome/free-solid-svg-icons'
+import { faAlignLeft, faBell, faBold, faCalendarDays, faCheckCircle, faCloudArrowUp, faEdit, faEllipsisVertical, faEye, faFileLines, faImage, faItalic, faLeaf, faLink, faList, faMagnifyingGlass, faPlus, faTrash, faUnderline, faXmark, faUserSlash } from '@fortawesome/free-solid-svg-icons'
 import './Admincustomers.css'
 import { ToastContainer, toast } from 'react-toastify';
-import { getAllUsersApi } from '../../services/allApi'
+import { deleteAUsersApi, getAllOrdersApi, getAllUsersApi } from '../../services/allApi'
+import AdminHeader from '../../components/admincomponents/AdminHeader'
+
+const ADMIN_EMAIL = 'greengoldspices.ndkm@gmail.com'
+
+const formatJoinedDate = (createdAt) => {
+    const joinedDate = new Date(createdAt)
+    return Number.isNaN(joinedDate.getTime())
+        ? 'Date unavailable'
+        : joinedDate.toLocaleString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'Asia/Kolkata',
+        })
+}
 
 function StatCard({ icon, label, value, detail, tone = 'green' }) {
     return <article className={`blog-stat-card ${tone}`}><span className="blog-stat-icon"><FontAwesomeIcon icon={icon} /></span><div><p>{label}</p><strong>{value}</strong><small>{detail}</small></div><FontAwesomeIcon className="stat-leaf" icon={faLeaf} /></article>
@@ -13,42 +30,88 @@ function StatCard({ icon, label, value, detail, tone = 'green' }) {
 
 function Admincustomers() {
 
-  const [search , setSearch] = useState("")
-  const [allusers, setAllUsers] = useState([])
+    const [search, setSearch] = useState("")
+    const [allusers, setAllUsers] = useState([])
+    const [allOrders, setAllOrders] = useState([])
+    const [deleteStatus, setDeleteStatus] = useState(false)
 
-  const getAllUsers = async()=>{
-    const result = await getAllUsersApi()
-    console.log(result);
-    setAllUsers(result.data.allUsers)
-    
-  }
-  const deleteUser = (id)=>{
-    
-  }
+    const getAllUsers = async () => {
+        const [usersResult, ordersResult] = await Promise.all([
+            getAllUsersApi(),
+            getAllOrdersApi(),
+        ])
+        if (usersResult?.status >= 200 && usersResult.status < 300 && Array.isArray(usersResult.data?.allUsers)) {
+            setAllUsers(usersResult.data.allUsers)
+        } else {
+            toast.error(usersResult?.response?.data?.message || 'Unable to load customers')
+        }
+        if (ordersResult?.status >= 200 && ordersResult.status < 300 && Array.isArray(ordersResult.data)) {
+            setAllOrders(ordersResult.data)
+        } else {
+            toast.error(ordersResult?.response?.data?.message || 'Unable to load customer orders')
+        }
+    }
+    const deleteUser = async (id) => {
+        const result = await deleteAUsersApi(id)
+        if (result.status >= 200 && result.status < 300) {
+            setDeleteStatus(!deleteStatus)
+        }
+        else {
+            toast.error("Something went wrong")
+        }
+    }
 
-  useEffect(()=>{
-    getAllUsers()
+    useEffect(() => {
+        getAllUsers()
 
-  },[])
+    }, [deleteStatus])
 
-  return (
-    <div className="admin-page-shell admin-blog-page">
+    const customers = useMemo(
+        () => allusers.filter((item) => item.email?.toLowerCase() !== ADMIN_EMAIL),
+        [allusers]
+    )
+    const filteredCustomers = useMemo(() => {
+        const query = search.trim().toLowerCase()
+        if (!query) return customers
+
+        return customers.filter((customer) => {
+            const phoneNumbers = Array.isArray(customer.address)
+                ? customer.address.map((address) => address?.mobileno || '').join(' ')
+                : ''
+            return [customer.name, customer.email, phoneNumbers]
+                .some((value) => String(value || '').toLowerCase().includes(query))
+        })
+    }, [customers, search])
+
+    const orderCounts = useMemo(() => {
+        const customerIdByEmail = new Map(
+            customers.map((customer) => [customer.email?.toLowerCase(), String(customer._id)])
+        )
+        const countsByUserId = new Map()
+        allOrders.forEach((order) => {
+            const userId = order.userId
+                ? String(order.userId)
+                : customerIdByEmail.get(order.email?.toLowerCase())
+            if (userId) countsByUserId.set(userId, (countsByUserId.get(userId) || 0) + 1)
+        })
+        return countsByUserId
+    }, [allOrders, customers])
+    const currentDate = new Date()
+    const activeCustomersCount = customers.filter((customer) => (
+        (orderCounts.get(String(customer._id)) || 0) > 10
+    )).length
+    const newCustomersCount = customers.filter((customer) => {
+        const joinedDate = new Date(customer.createdAt)
+        return !Number.isNaN(joinedDate.getTime()) &&
+            joinedDate.getFullYear() === currentDate.getFullYear() &&
+            joinedDate.getMonth() === currentDate.getMonth()
+    }).length
+
+    return (
+        <div className="admin-page-shell admin-blog-page">
             <Sidebar activeItem="Customers" />
             <main className="admin-blog-content">
-                <header className="admin-blog-topbar">
-                    {/* <label className="admin-global-search">
-                        <FontAwesomeIcon icon={faMagnifyingGlass} />
-                        <input placeholder="Search here..." />
-                    </label> */}
-                    <div className="admin-account">
-                        <button type="button" aria-label="Notifications">
-                            <FontAwesomeIcon icon={faBell} />
-                            <b>3</b>
-                        </button>
-                        <span className="admin-account-avatar">A</span>
-                        <strong>Admin</strong>
-                        <FontAwesomeIcon icon={faChevronDown} /></div>
-                </header>
+                <AdminHeader className="admin-blog-topbar" />
 
                 <section className="admin-blog-main">
                     <div className="admin-blog-heading">
@@ -62,11 +125,10 @@ function Admincustomers() {
                     </div>
 
                     <div className="blog-stat-grid">
-                        <StatCard icon={faFileLines} label="Total Customers" value="18" detail="↑ 2 new this week" />
-                        <StatCard icon={faCheckCircle} label="Active Customers" value="12" detail="↑ 1 new this week" />
-                        <StatCard icon={faFileLines} label="New Customers" value="4" detail="↑ 0 this week" tone="blue" />
-                        <StatCard icon={faCalendarDays} label="Blocked Customers" value="2" detail="↑ 1 this week" tone="gold" />
-                        </div>
+                        <StatCard icon={faFileLines} label="Total Customers" value={customers.length} />
+                        <StatCard icon={faCheckCircle} label="Active Customers" value={activeCustomersCount} detail="More than 10 orders" />
+                        <StatCard icon={faFileLines} label="New Customers" value={newCustomersCount} detail="Joined this month" tone="blue" />
+                    </div>
 
                     <div >
                         <section className="admin-blog-table-panel">
@@ -75,21 +137,8 @@ function Admincustomers() {
                                     <FontAwesomeIcon icon={faMagnifyingGlass} />
                                     <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search Customers by name,email,phone..." />
                                 </label>
-                                {/* <select >
-                                    <option>All Categories</option>
-                                    <option>Health & Wellness</option>
-                                    <option>Buying Guide</option>
-                                    <option>Recipes</option>
-                                    <option>Farming</option>
-                                    <option>Spices</option>
-                                </select> */}
-                                <select>
-                                    <option>All Status</option>
-                                    <option>Active</option>
-                                    <option>InActive</option>
-                                    <option>Deactivated</option>
-                                    <option>Blocked</option>
-                                </select>
+
+
                             </div>
                             <div className="blog-table-scroll">
                                 <table className="admin-blog-table">
@@ -101,15 +150,15 @@ function Admincustomers() {
                                             <th>Email</th>
                                             <th>Phone Number</th>
                                             <th>Total Order</th>
-                                             <th>Status</th>
+
                                             <th>Joined Date</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                       
-                                           {allusers.map((user)=>(
-                                            <tr >
+
+                                        {filteredCustomers.map((user) => (
+                                            <tr key={user._id}>
 
                                                 <td>
                                                     <span className="admin-account-avatar">{user.name[0].toUpperCase()}</span>
@@ -119,31 +168,31 @@ function Admincustomers() {
                                                     {/* <small>post.description</small> */}
                                                 </td>
                                                 <td>
-                                                  <span>{user.email}</span>
+                                                    <span>{user.email}</span>
                                                     {/* <span className={`blog-category ${post.category.toLowerCase().replaceAll(' ', '-')}`}>{post.category}</span> */}
                                                 </td>
-                                                <td>{user.address.map((item)=>item.mobileno)}</td>
-                                              
-                                                <td>0</td>
-                                                  <td><span className="blog-tags" style={{backgroundColor:'green', color:'white'}}>Active</span>
-                                                  <span className="blog-tags" >InActive</span>
-                                                  <span className="blog-tags" style={{backgroundColor:'red', color:'white'}}>DeActivated</span>
-                                                  <span className="blog-tags" style={{backgroundColor:'yellow', color:'black'}}>Blocked</span></td>
-                                                  <td>{user.createdAt}</td>
-                                                  <td>
-                                                  
+                                                <td>{user.address.map((item) => item.mobileno)}</td>
+
+                                                <td>{orderCounts.get(String(user._id)) || 0}</td>
+
+                                                <td>{formatJoinedDate(user.createdAt)}</td>
+                                                <td>
+
                                                     <div className="blog-row-actions">
-                                                        <button style={{backgroundColor:'yellow', color:'black'}} type="button" aria-label="View">
-                                                            <FontAwesomeIcon icon={faUserSlash} />
+
+                                                        <button onClick={() => deleteUser(user._id)} type="button" aria-label="Delete" style={{ backgroundColor: 'red' }}>
+                                                            <FontAwesomeIcon icon={faTrash} />
                                                         </button>
-                                                        <button onClick={()=>deleteUser(user._id)} type="button" aria-label="Delete" style={{backgroundColor:'red'}}>
-                                                            <FontAwesomeIcon icon={faTrash}  />
-                                                        </button>
-                                                       
+
                                                     </div>
                                                 </td>
                                             </tr>
-                                           )) }
+                                        ))}
+                                        {filteredCustomers.length === 0 && (
+                                            <tr>
+                                                <td colSpan="7" className="text-center">No customers match your search.</td>
+                                            </tr>
+                                        )}
 
 
                                     </tbody>
@@ -152,13 +201,13 @@ function Admincustomers() {
                             {/* <div className="blog-table-footer">Showing 1 to {filteredPosts.length} of {posts.length} entries <span><button type="button">‹</button><b>1</b><button type="button">2</button><button type="button">3</button><button type="button">›</button></span></div> */}
                         </section>
 
-                        
+
                     </div>
                 </section>
             </main>
             <ToastContainer position='top-right' autoClose={3000} theme='colored' />
         </div>
-  )
+    )
 }
 
 export default Admincustomers

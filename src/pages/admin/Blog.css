@@ -415,12 +415,12 @@
     background: #fff0c9;
 }
 
-.blog-row-actions {
+.blog-row-actions1 {
     display: flex;
     gap: 4px;
 }
 
-.blog-row-actions button {
+.blog-row-actions1 button {
     width: 16px;
     height: 16px;
     padding: 0;
@@ -432,7 +432,7 @@
     font-size: 7px;
 }
 
-.blog-row-actions button:nth-child(2) {
+.blog-row-actions1 button:nth-child(2) {
     background: #ef5963 !important;
 }
 
@@ -1031,6 +1031,13 @@
 
     .admin-blog-heading .blog-primary-button {
         align-self: stretch;
+    }
+}
+
+@media (min-width: 901px) {
+    .blog-stat-grid.products-stat-grid {
+        width: 100%;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 #imageUpload{

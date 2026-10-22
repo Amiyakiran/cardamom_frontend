@@ -23,7 +23,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/admincomponents/Sidebar'
+import AdminHeader from '../../components/admincomponents/AdminHeader'
 import './Adminsetting.css'
+import { toast,ToastContainer } from 'react-toastify'
 
 const tabs = [
   { label: 'General', icon: faGear },
@@ -35,10 +37,9 @@ const tabs = [
 ]
 
 const initialSettings = {
-  storeName: 'Green Gold',
-  email: 'info@greengold.com',
-  phone: '+91 98765 43210',
-  description: 'Premium quality spices sourced from the finest farms. Bringing authentic flavour to your kitchen.',
+  storeName: 'Green Gold Spices',
+  email: 'greengoldspices.ndkm@gmail.com',
+  phone: '+918113804245',
   currency: 'INR - ₹',
   language: 'English',
   timezone: 'Asia/Kolkata (IST)',
@@ -62,6 +63,7 @@ function Adminsetting() {
   const logoInput = useRef(null)
 
   const updateSetting = (event) => {
+    toast.error("Something went wrong")
     const { name, value, type, checked } = event.currentTarget
     setSettings((current) => ({
       ...current,
@@ -70,14 +72,14 @@ function Adminsetting() {
     setSaveMessage('')
   }
 
-  const handleLogoChange = (event) => {
-    const file = event.currentTarget.files?.[0]
-    if (!file) return
+  // const handleLogoChange = (event) => {
+  //   const file = event.currentTarget.files?.[0]
+  //   if (!file) return
 
-    const reader = new FileReader()
-    reader.onload = () => setStoreLogo(reader.result)
-    reader.readAsDataURL(file)
-  }
+  //   const reader = new FileReader()
+  //   reader.onload = () => setStoreLogo(reader.result)
+  //   reader.readAsDataURL(file)
+  // }
 
   const resetSettings = () => {
     setSettings(initialSettings)
@@ -93,37 +95,8 @@ function Adminsetting() {
     <div className="admin-page-shell">
       <Sidebar activeItem="Settings" />
       <main className="admin-page-content settings-page">
-        {/* <div className="settings-topbar">
-          <label className="settings-search">
-            <FontAwesomeIcon icon={faMagnifyingGlass} aria-hidden="true" />
-            <input type="search" placeholder="Search anything..." aria-label="Search settings" />
-          </label>
-          <div className="settings-account-tools">
-            <button className="settings-icon-button settings-notifications" type="button" aria-label="Notifications, 3 unread">
-              <FontAwesomeIcon icon={faBell} aria-hidden="true" />
-              <span>3</span>
-            </button>
-            <button className="settings-account-button" type="button">
-              <span className="settings-avatar">A</span>
-              <span>Admin</span>
-              <FontAwesomeIcon icon={faChevronDown} aria-hidden="true" />
-            </button>
-          </div>
-        </div> */}
-        <header className="admin-blog-topbar">
-          {/* <label className="admin-global-search">
-                                    <FontAwesomeIcon icon={faMagnifyingGlass} />
-                                    <input placeholder="Search here..." />
-                                </label> */}
-          <div className="admin-account">
-            <button type="button" aria-label="Notifications">
-              <FontAwesomeIcon icon={faBell} />
-              <b>3</b>
-            </button>
-            <span className="admin-account-avatar">A</span>
-            <strong>Admin</strong>
-            <FontAwesomeIcon icon={faChevronDown} /></div>
-        </header>
+
+        <AdminHeader className="admin-blog-topbar" />
         {/* 
         <header className="settings-heading">
           <div>
@@ -145,21 +118,7 @@ function Adminsetting() {
 
         <div className="settings-columns">
           <form className="settings-panel" onSubmit={saveSettings}>
-            {/* <div className="settings-tabs" role="tablist" aria-label="Settings categories">
-              {tabs.map((tab) => (
-                <button
-                  className={`settings-tab${activeTab === tab.label ? ' is-active' : ''}`}
-                  key={tab.label}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === tab.label}
-                  onClick={() => setActiveTab(tab.label)}
-                >
-                  <FontAwesomeIcon icon={tab.icon} aria-hidden="true" />
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </div> */}
+
 
             <section className="settings-section" aria-labelledby="store-information-title">
               <div className="settings-section-heading">
@@ -167,42 +126,21 @@ function Adminsetting() {
                 <p>Update your basic store details and branding.</p>
               </div>
 
-              <div className="store-information-grid">
-                <div className="settings-logo-control">
-                  <div className="settings-logo-preview">
-                    <img src={storeLogo} alt="Green Gold store logo" />
-                  </div>
-                  <input
-                    ref={logoInput}
-                    className="settings-file-input"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoChange}
-                    aria-label="Choose a new store logo"
-                  />
-                  <button className="settings-logo-button" type="button" onClick={() => logoInput.current?.click()}>
-                    <FontAwesomeIcon icon={faCamera} aria-hidden="true" />
-                    Change Logo
-                  </button>
-                </div>
+              <div>
 
-                <label className="settings-field">
+                <label className="settings-field mt-3">
                   <span>Store Name <b>*</b></span>
-                  <input name="storeName" value={settings.storeName} onChange={updateSetting} required />
+                  <input name="storeName" value={settings.storeName} readOnly onChange={updateSetting} required />
                 </label>
-                <label className="settings-field">
+                <label className="settings-field mt-3">
                   <span>Email Address <b>*</b></span>
-                  <input name="email" type="email" value={settings.email} onChange={updateSetting} required />
+                  <input name="email" type="email" value={settings.email} readOnly onChange={updateSetting} required />
                 </label>
-                <label className="settings-field">
+                <label className="settings-field mt-3">
                   <span>Phone Number <b>*</b></span>
-                  <input name="phone" type="tel" value={settings.phone} onChange={updateSetting} required />
+                  <input name="phone" type="tel" value={settings.phone} readOnly onChange={updateSetting} required />
                 </label>
-                <label className="settings-field settings-description-field">
-                  <span>Store Description</span>
-                  <textarea name="description" maxLength={220} value={settings.description} onChange={updateSetting} />
-                  <small>{settings.description.length}/220</small>
-                </label>
+
               </div>
             </section>
 
@@ -286,18 +224,12 @@ function Adminsetting() {
               </div>
             </section>
 
-            {/* <section className="settings-support">
-              <div className="settings-support-copy">
-                <FontAwesomeIcon icon={faHeadset} aria-hidden="true" />
-                <h2>Support</h2>
-                <p>Need help? We're here for you.</p>
-                <a href="mailto:support@greengold.com">Contact Support</a>
-              </div>
-              <img src="/assets/dashboardImg.png" alt="Fresh cardamom pods" />
-            </section> */}
+
           </aside>
         </div>
       </main>
+      <ToastContainer position='top-right' autoClose={3000} theme='colored' />
+
     </div>
   )
 }

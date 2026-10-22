@@ -12,8 +12,6 @@ import Admindashboard from './pages/admin/Admindashboard'
 import Adminproducts from './pages/admin/Adminproducts'
 import Adminorders from './pages/admin/Adminorders'
 import Admininventory from './pages/admin/Admininventory'
-import AdminReports from './pages/admin/AdminReports'
-import Admincoupons from './pages/admin/Admincoupons'
 import Adminsetting from './pages/admin/Adminsetting'
 import Admincustomers from './pages/admin/Admincustomers'
 import Allproducts from './pages/Allproducts'
@@ -40,8 +38,6 @@ function App() {
         <Route path="/admin/orders" element={<Adminorders />} />
         <Route path="/admin/inventory" element={<Admininventory />} />
         <Route path="/admin/customers" element={<Admincustomers />} />
-        <Route path="/admin/reports" element={<AdminReports />} />
-        <Route path="/admin/coupons" element={<Admincoupons />} />
         <Route path="/admin/blog" element={<AdminBlog />} />
         <Route path="/admin/settings" element={<Adminsetting />} />
         <Route path="*" element={<NotFound />} />

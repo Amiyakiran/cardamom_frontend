@@ -2,9 +2,10 @@ import React from 'react'
 import Sidebar from '../../components/admincomponents/Sidebar'
 import { useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAlignLeft, faBell, faBold, faCalendarDays, faCheckCircle, faChevronDown, faCloudArrowUp, faEdit, faEllipsisVertical, faEye, faFileLines, faImage, faItalic, faLeaf, faLink, faList, faMagnifyingGlass, faPlus, faTrash, faUnderline, faXmark, } from '@fortawesome/free-solid-svg-icons'
+import { faAlignLeft, faBell, faBold, faCalendarDays, faCheckCircle, faCloudArrowUp, faEdit, faEllipsisVertical, faEye, faFileLines, faImage, faItalic, faLeaf, faLink, faList, faMagnifyingGlass, faPlus, faTrash, faUnderline, faXmark, } from '@fortawesome/free-solid-svg-icons'
 import './Blog.css'
 import './Adminproducts.css'
+import AdminHeader from '../../components/admincomponents/AdminHeader'
 import { ToastContainer, toast } from 'react-toastify';
 import { addProductApi, deleteproductApi, editproductApi, getAllProductApi, getAproductApi } from '../../services/allApi'
 import { useEffect } from 'react'
@@ -49,7 +50,7 @@ function Adminproducts() {
 
     const handleShow = async (id) => {
         setShow(true);
-        console.log(id);
+        // console.log(id);
 
         const result = await getAproductApi(id)
         // console.log(result);
@@ -66,7 +67,7 @@ function Adminproducts() {
 
         try {
             if (!title || !image || !varient || !description || !stock || !price || !date) {
-                toast.info('fil all the fields completely')
+                toast.info('fill all the fields completely')
             }
             else {
                 const reqBody = new FormData()
@@ -82,7 +83,7 @@ function Adminproducts() {
                     "Content-Type": "multipart/form-data"
                 }
                 const result = await addProductApi(reqBody, header)
-                console.log(result);
+                // console.log(result);
                 if (result.status >= 200 && result.status < 300) {
                     toast.success(result.data.message)
                     setStatus({ ...status, addStatus: !status.addStatus })
@@ -96,7 +97,7 @@ function Adminproducts() {
 
             }
         } catch (error) {
-            console.log('something went wrong', error)
+            // console.log('something went wrong', error)
         }
     }
 
@@ -114,7 +115,7 @@ function Adminproducts() {
             setAllProducts({ allProductArray: result.data, tempArray: result.data })
 
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
 
     }
@@ -122,7 +123,7 @@ function Adminproducts() {
 
     const deleteProduct = async (id) => {
         const result = await deleteproductApi(id)
-        console.log(result);
+        // console.log(result);
         if (result.status >= 200 && result.status < 300) {
             toast.success('product deleted Successfully')
             setStatus({ ...status, deleteStatus: !status.deleteStatus })
@@ -161,7 +162,7 @@ function Adminproducts() {
         setCurrentPage((page) => Math.min(page, Math.max(1, pageCount)))
     }, [pageCount])
 
-    console.log(editProduct);
+    // console.log(editProduct);
 
     const editProductfunction = async (e) => {
         e.preventDefault()
@@ -204,20 +205,7 @@ function Adminproducts() {
             <div className="admin-page-shell admin-blog-page">
                 <Sidebar activeItem="products" />
                 <main className="admin-blog-content">
-                    <header className="admin-blog-topbar">
-                        {/* <label className="admin-global-search">
-                            <FontAwesomeIcon icon={faMagnifyingGlass} />
-                            <input placeholder="Search here..." />
-                        </label> */}
-                        <div className="admin-account">
-                            <button type="button" aria-label="Notifications">
-                                <FontAwesomeIcon icon={faBell} />
-                                <b>3</b>
-                            </button>
-                            <span className="admin-account-avatar">A</span>
-                            <strong>Admin</strong>
-                            <FontAwesomeIcon icon={faChevronDown} /></div>
-                    </header>
+                    <AdminHeader className="admin-blog-topbar" />
 
                     <section className="admin-blog-main">
                         <div className="admin-blog-heading">
@@ -231,10 +219,10 @@ function Adminproducts() {
                         </div>
 
                         <div className="blog-stat-grid products-stat-grid">
-                            <StatCard icon={faFileLines} label="Total products" value={allproducts.allProductArray.length} detail="↑ 2 new this week" />
-                            <StatCard icon={faCheckCircle} label="In stock" value={allproducts.allProductArray.filter((item) => Number(item.stock) >= Number(stockThreshold))?.length} detail="↑ 1 new this week" />
-                            <StatCard icon={faFileLines} label="Low stock" value={allproducts.allProductArray.filter((item) => Number(item.stock) > 0 && Number(item.stock) < Number(stockThreshold))?.length} detail="↑ 0 this week" tone="blue" />
-                            <StatCard icon={faCalendarDays} label="Out of stock" value={allproducts.allProductArray.filter((item) => Number(item.stock) === 0)?.length} detail="↑ 1 this week" tone="gold" /></div>
+                            <StatCard icon={faFileLines} label="Total products" value={allproducts.allProductArray.length} />
+                            <StatCard icon={faCheckCircle} label="In stock" value={allproducts.allProductArray.filter((item) => Number(item.stock) >= Number(stockThreshold))?.length}/>
+                            <StatCard icon={faFileLines} label="Low stock" value={allproducts.allProductArray.filter((item) => Number(item.stock) > 0 && Number(item.stock) < Number(stockThreshold))?.length} tone="blue" />
+                            <StatCard icon={faCalendarDays} label="Out of stock" value={allproducts.allProductArray.filter((item) => Number(item.stock) === 0)?.length}  tone="gold" /></div>
 
                         <div className="admin-blog-grid">
                             <section className="admin-blog-table-panel">
@@ -309,7 +297,7 @@ function Adminproducts() {
                                                     <td>{item.date}</td>
 
                                                     <td>
-                                                        <div className="blog-row-actions">
+                                                        <div className="blog-row-actions1">
                                                             <button onClick={() => handleShow(item._id)} type="button" aria-label="Edit" style={{ backgroundColor: 'blue', color: 'white' }}>
                                                                 <FontAwesomeIcon icon={faEdit} />
                                                             </button>
@@ -442,10 +430,7 @@ function Adminproducts() {
                         </div>
                     </section>
                 </main>
-                <ToastContainer
-                    position='top-right'
-                    autoClose={3000}
-                    theme='colored' />
+                <ToastContainer position='top-right' autoClose={3000} theme='colored' />
             </div>
 
             <Modal show={show} onHide={handleClose}>
@@ -488,7 +473,7 @@ function Adminproducts() {
 
                         <div className="blog-form-row">
                             <label>Stock <em>*</em>
-                                <input value={editProduct.stock} name="stock" placeholder='In packets' onChange={(e) => setEditProduct({ ...editProduct, stock: e.target.value })} />
+                                <input readOnly value={editProduct.stock} name="stock" placeholder='In packets' onChange={(e) => setEditProduct({ ...editProduct, stock: e.target.value })} />
 
                             </label>
                               <label>Added Date <em>*</em>

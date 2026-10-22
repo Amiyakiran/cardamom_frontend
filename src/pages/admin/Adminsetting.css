@@ -533,7 +533,7 @@
 	border-radius: 8px;
 	background-color: #e9e1ce;
 	background-image: linear-gradient(90deg, rgba(248, 243, 226, .96) 0%, rgba(248, 243, 226, .8) 34%, rgba(248, 243, 226, .03) 75%), url('/assets/banner.png');
-	background-position: center, 73% center;
+	background-position: bottom;
 	background-size: cover;
 }
 

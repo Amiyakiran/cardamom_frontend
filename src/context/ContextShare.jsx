@@ -6,7 +6,8 @@ export const AuthContext = createContext()
 const ContextShare = ({ children }) => {
 
   const [user, setUser] = useState("")
-   const [userId, setUserId] = useState("")
+  const [userEmail, setUserEmail] = useState("")
+  const [userId, setUserId] = useState("")
   const [loading, setLoading] = useState(true)
 
 
@@ -19,6 +20,7 @@ const ContextShare = ({ children }) => {
 
       if (result?.status === 200) {
         setUser(result.data.user.name)
+        setUserEmail(result.data.user.email)
         setUserId(result.data.user.id)
       } else {
         setUser("")
@@ -38,7 +40,7 @@ const ContextShare = ({ children }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, setUser, userId, setUserId, loading, checkAuth }}>
+    <AuthContext.Provider value={{ user, setUser, userId, setUserId, loading, checkAuth,userEmail }}>
       {children}
     </AuthContext.Provider>
   )
