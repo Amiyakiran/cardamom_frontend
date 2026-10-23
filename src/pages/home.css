@@ -411,13 +411,13 @@
  
   /* border-radius: 42% 58% 52% 48% / 32% 36% 64% 68%; */
   overflow: hidden;
-  box-shadow: 0 24px 28px rgba(24, 54, 40, .08);
-  clip-path: path(
+  /* box-shadow: 0 24px 28px rgba(24, 54, 40, .08); */
+  /* clip-path: path(
     "M 20 250
      C 130 70, 330 10, 650 20
      C 530 150, 390 300, 20 250
      Z"
-  );
+  ); */
 }
 .home-product-visual img{
    width: 100%;
