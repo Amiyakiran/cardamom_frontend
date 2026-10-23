@@ -77,43 +77,6 @@ function Admininventory() {
 
   //functions
 
-  useEffect(() => {
-    let isCurrent = true
-    const loadProducts = async () => {
-      try {
-        const result = await getAllProductApi('')
-        if (!isCurrent) return
-        if (result?.status >= 200 && result.status < 300 && Array.isArray(result.data)) {
-          setProducts(result.data)
-          setDraftRows(result.data.map(createDraftRow))
-        } else {
-          toast.error(result?.response?.data?.message || 'Unable to load products for inventory')
-        }
-      } catch (error) {
-        // console.error('Unable to load products for inventory', error)
-        if (isCurrent) toast.error('Unable to load products for inventory')
-      } finally {
-        if (isCurrent) setLoading(false)
-      }
-    }
-    loadProducts()
-    return () => { isCurrent = false }
-  }, [])
-
-  useEffect(() => {
-    let isCurrent = true
-    const loadInventoryReports = async () => {
-      const result = await getAllInventoriesApi()
-      if (!isCurrent) return
-      if (result?.status >= 200 && result.status < 300 && Array.isArray(result.data)) {
-        setReports(result.data.map(normalizeInventoryReport))
-      } else {
-        toast.error(result?.response?.data?.message || 'Unable to load inventory reports')
-      }
-    }
-    loadInventoryReports()
-    return () => { isCurrent = false }
-  }, [])
 
   const unitsSoldToday = draftRows.reduce((total, row) => total + (Number(row.unitsSold) || 0), 0)
   const unitsAddedToday = draftRows.reduce((total, row) => total + (Number(row.stockAdded) || 0), 0)
@@ -145,6 +108,7 @@ function Admininventory() {
     displayedPage * reportsPerPage
   )
 
+  //function to create rows in the product table
   const updateDraftRow = (productId, field, value) => {
     setDraftRows((current) => current.map((row) => {
       if (row.productId !== productId) return row
@@ -157,6 +121,8 @@ function Admininventory() {
     }))
   }
 
+
+  //save the inventory report daily
   const saveDailyReport = async () => {
     const report = {
       date: reportDate,
@@ -195,7 +161,7 @@ function Admininventory() {
   }
 
   
-
+//delete report
   const confirmDeleteReport = async () => {
     if (!deleteReport) return
     try {
@@ -219,6 +185,48 @@ function Admininventory() {
     document.querySelector('.inventory-stock-added')?.focus()
   }
 
+  //SIDEEFFECT
+    useEffect(() => {
+    let isCurrent = true
+    const loadProducts = async () => {
+      try {
+        const result = await getAllProductApi('')
+        if (!isCurrent) return
+        if (result?.status >= 200 && result.status < 300 && Array.isArray(result.data)) {
+          setProducts(result.data)
+          setDraftRows(result.data.map(createDraftRow))
+        } else {
+          toast.error(result?.response?.data?.message || 'Unable to load products for inventory')
+        }
+      } catch (error) {
+        // console.error('Unable to load products for inventory', error)
+        if (isCurrent) toast.error('Unable to load products for inventory')
+      } finally {
+        if (isCurrent) setLoading(false)
+      }
+    }
+    loadProducts()
+    return () => { isCurrent = false }
+  }, [])
+
+  useEffect(() => {
+    let isCurrent = true
+    const loadInventoryReports = async () => {
+      const result = await getAllInventoriesApi()
+      if (!isCurrent) return
+      if (result?.status >= 200 && result.status < 300 && Array.isArray(result.data)) {
+        setReports(result.data.map(normalizeInventoryReport))
+      } else {
+        toast.error(result?.response?.data?.message || 'Unable to load inventory reports')
+      }
+    }
+    loadInventoryReports()
+    return () => { isCurrent = false }
+  }, [])
+
+
+
+  //output - jsx ---------------------
   return (
     <div className="admin-page-shell inventory-shell">
       <Sidebar activeItem="Inventory" />

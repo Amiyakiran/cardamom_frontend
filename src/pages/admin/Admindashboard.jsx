@@ -1,21 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faBell,
-  faBoxOpen,
-  faCalendarDays,
-  faChevronRight,
-  faCircleCheck,
-  faClock,
-  faCreditCard,
-  faLeaf,
-  faReceipt,
-  faShoppingBag,
-  faTriangleExclamation,
-  faTruckFast,
-  faUsers,
-  faWallet,
-} from '@fortawesome/free-solid-svg-icons'
+import {faBoxOpen,faCalendarDays,faChevronRight,faCircleCheck,faClock,faCreditCard,faLeaf,faReceipt,faShoppingBag,faTriangleExclamation,faTruckFast,faUsers,faWallet,} from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/admincomponents/Sidebar'
 import AdminHeader from '../../components/admincomponents/AdminHeader'
@@ -23,6 +8,11 @@ import { getAllInventoriesApi, getAllOrdersApi, getAllProductApi, getAllUsersApi
 import { serverUrl } from '../../services/serverUrl'
 import './Admindashboard.css'
 
+
+
+
+
+//basic logic-------------------------------
 const normalizeStatus = (status) => String(status || '').trim().toLowerCase()
 const ADMIN_EMAIL = 'greengoldspices.ndkm@gmail.com'
 const getOrderAmount = (order) => Number(order.TotalAmount ?? order.total ?? 0) || 0
@@ -44,10 +34,15 @@ const getOrderDate = (date) => {
     ? 'Date unavailable'
     : parsedDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
 }
-
 const formatCurrency = (amount) => `₹${Number(amount || 0).toLocaleString('en-IN')}`
 
+
+
+
+
 function Admindashboard() {
+
+  //states--------------------------------------
   const [orders, setOrders] = useState([])
   const [products, setProducts] = useState([])
   const [customers, setCustomers] = useState([])
@@ -55,49 +50,9 @@ function Admindashboard() {
   const [loading, setLoading] = useState(true)
   const [loadErrors, setLoadErrors] = useState([])
 
-  useEffect(() => {
-    let isCurrent = true
-    const loadDashboard = async () => {
-      const [ordersResult, productsResult, customersResult, inventoryResult] = await Promise.all([
-        getAllOrdersApi(),
-        getAllProductApi(''),
-        getAllUsersApi(),
-        getAllInventoriesApi(),
-      ])
-      if (!isCurrent) return
 
-      const errors = []
-      if (ordersResult?.status >= 200 && ordersResult.status < 300 && Array.isArray(ordersResult.data)) {
-        setOrders(ordersResult.data)
-      } else {
-        errors.push('Orders could not be loaded')
-      }
-      if (productsResult?.status >= 200 && productsResult.status < 300 && Array.isArray(productsResult.data)) {
-        setProducts(productsResult.data)
-      } else {
-        errors.push('Products could not be loaded')
-      }
-      const customerList = Array.isArray(customersResult?.data)
-        ? customersResult.data
-        : customersResult?.data?.allUsers
-      if (customersResult?.status >= 200 && customersResult.status < 300 && Array.isArray(customerList)) {
-        setCustomers(customerList)
-      } else {
-        errors.push('Customers could not be loaded')
-      }
-      if (inventoryResult?.status >= 200 && inventoryResult.status < 300 && Array.isArray(inventoryResult.data)) {
-        setInventoryReports(inventoryResult.data)
-      } else {
-        errors.push('Inventory reports could not be loaded')
-      }
-      setLoadErrors(errors)
-      setLoading(false)
-    }
 
-    loadDashboard()
-    return () => { isCurrent = false }
-  }, [])
-
+  //functions
   const now = new Date()
   const monthlyOrders = orders.filter((order) => {
     const date = new Date(order.createdAt)
@@ -105,15 +60,20 @@ function Admindashboard() {
       date.getMonth() === now.getMonth() &&
       date.getFullYear() === now.getFullYear()
   })
+
   const totalRevenue = orders.reduce((sum, order) => sum + getOrderAmount(order), 0)
+
   const monthlyRevenue = monthlyOrders.reduce((sum, order) => sum + getOrderAmount(order), 0)
+
   const monthlyUnitsSold = inventoryReports
     .filter((report) => {
       const [year, month] = String(report.date || '').split('-').map(Number)
       return year === now.getFullYear() && month === now.getMonth() + 1
     })
     .reduce((sum, report) => sum + getInventoryUnitsSold(report), 0)
+
   const totalUnitsSold = orders.reduce((sum, order) => sum + getOrderUnitsSold(order), 0)
+
   const customerCount = customers.filter(
     (customer) => customer.email?.toLowerCase() !== ADMIN_EMAIL
   ).length
@@ -129,6 +89,8 @@ function Admindashboard() {
     const stock = Number(product.stock)
     return Number.isFinite(stock) && stock > 0 && stock <= 50
   })
+
+
   const outOfStockProducts = products.filter((product) => Number(product.stock) === 0)
   const totalSpiceStock = products.reduce((total, product) => {
     const stock = Number(product.stock)
@@ -171,6 +133,52 @@ function Admindashboard() {
     
     { label: 'Total Customers', value: customerCount.toLocaleString('en-IN'), note: 'Registered customers', icon: faUsers },
   ]
+
+
+  //side Effects-------------------------------
+    useEffect(() => {
+    let isCurrent = true
+    const loadDashboard = async () => {
+      const [ordersResult, productsResult, customersResult, inventoryResult] = await Promise.all([
+        getAllOrdersApi(),
+        getAllProductApi(''),
+        getAllUsersApi(),
+        getAllInventoriesApi(),
+      ])
+      if (!isCurrent) return
+
+      const errors = []
+      if (ordersResult?.status >= 200 && ordersResult.status < 300 && Array.isArray(ordersResult.data)) {
+        setOrders(ordersResult.data)
+      } else {
+        errors.push('Orders could not be loaded')
+      }
+      if (productsResult?.status >= 200 && productsResult.status < 300 && Array.isArray(productsResult.data)) {
+        setProducts(productsResult.data)
+      } else {
+        errors.push('Products could not be loaded')
+      }
+      const customerList = Array.isArray(customersResult?.data)
+        ? customersResult.data
+        : customersResult?.data?.allUsers
+      if (customersResult?.status >= 200 && customersResult.status < 300 && Array.isArray(customerList)) {
+        setCustomers(customerList)
+      } else {
+        errors.push('Customers could not be loaded')
+      }
+      if (inventoryResult?.status >= 200 && inventoryResult.status < 300 && Array.isArray(inventoryResult.data)) {
+        setInventoryReports(inventoryResult.data)
+      } else {
+        errors.push('Inventory reports could not be loaded')
+      }
+      setLoadErrors(errors)
+      setLoading(false)
+    }
+
+    loadDashboard()
+    return () => { isCurrent = false }
+  }, [])
+
 
   return (
     <div className="admin-page-shell dashboard-shell">

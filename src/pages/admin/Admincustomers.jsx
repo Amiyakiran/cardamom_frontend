@@ -8,6 +8,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import { deleteAUsersApi, getAllOrdersApi, getAllUsersApi } from '../../services/allApi'
 import AdminHeader from '../../components/admincomponents/AdminHeader'
 
+
+
+
+//basic logic
 const ADMIN_EMAIL = 'greengoldspices.ndkm@gmail.com'
 
 const formatJoinedDate = (createdAt) => {
@@ -28,13 +32,24 @@ function StatCard({ icon, label, value, detail, tone = 'green' }) {
     return <article className={`blog-stat-card ${tone}`}><span className="blog-stat-icon"><FontAwesomeIcon icon={icon} /></span><div><p>{label}</p><strong>{value}</strong><small>{detail}</small></div><FontAwesomeIcon className="stat-leaf" icon={faLeaf} /></article>
 }
 
+
+
+
+
 function Admincustomers() {
 
+
+    //state----------------------------
     const [search, setSearch] = useState("")
     const [allusers, setAllUsers] = useState([])
     const [allOrders, setAllOrders] = useState([])
     const [deleteStatus, setDeleteStatus] = useState(false)
 
+
+
+    //function----------------------------
+
+    //get all users and orders
     const getAllUsers = async () => {
         const [usersResult, ordersResult] = await Promise.all([
             getAllUsersApi(),
@@ -51,6 +66,9 @@ function Admincustomers() {
             toast.error(ordersResult?.response?.data?.message || 'Unable to load customer orders')
         }
     }
+
+
+ //delete particular user
     const deleteUser = async (id) => {
         const result = await deleteAUsersApi(id)
         if (result.status >= 200 && result.status < 300) {
@@ -61,15 +79,13 @@ function Admincustomers() {
         }
     }
 
-    useEffect(() => {
-        getAllUsers()
-
-    }, [deleteStatus])
-
+   
+    //display users other than admin
     const customers = useMemo(
         () => allusers.filter((item) => item.email?.toLowerCase() !== ADMIN_EMAIL),
         [allusers]
     )
+    //search customer
     const filteredCustomers = useMemo(() => {
         const query = search.trim().toLowerCase()
         if (!query) return customers
@@ -83,6 +99,8 @@ function Admincustomers() {
         })
     }, [customers, search])
 
+
+    //order count of users
     const orderCounts = useMemo(() => {
         const customerIdByEmail = new Map(
             customers.map((customer) => [customer.email?.toLowerCase(), String(customer._id)])
@@ -96,16 +114,36 @@ function Admincustomers() {
         })
         return countsByUserId
     }, [allOrders, customers])
-    const currentDate = new Date()
+
+
+    const currentDate = new Date() //current date
+
+    //customer who have more than 10 orders - active customer
     const activeCustomersCount = customers.filter((customer) => (
         (orderCounts.get(String(customer._id)) || 0) > 10
     )).length
+
+    //customer joined current month - new customer
     const newCustomersCount = customers.filter((customer) => {
         const joinedDate = new Date(customer.createdAt)
         return !Number.isNaN(joinedDate.getTime()) &&
             joinedDate.getFullYear() === currentDate.getFullYear() &&
             joinedDate.getMonth() === currentDate.getMonth()
     }).length
+
+
+
+ //Side effect-----------------------------------
+
+     useEffect(() => {
+        getAllUsers()
+
+    }, [deleteStatus])
+
+
+
+
+    //output- jsx -----------------------------------------------
 
     return (
         <div className="admin-page-shell admin-blog-page">
@@ -169,7 +207,6 @@ function Admincustomers() {
                                                 </td>
                                                 <td>
                                                     <span>{user.email}</span>
-                                                    {/* <span className={`blog-category ${post.category.toLowerCase().replaceAll(' ', '-')}`}>{post.category}</span> */}
                                                 </td>
                                                 <td>{user.address.map((item) => item.mobileno)}</td>
 
@@ -198,7 +235,6 @@ function Admincustomers() {
                                     </tbody>
                                 </table>
                             </div>
-                            {/* <div className="blog-table-footer">Showing 1 to {filteredPosts.length} of {posts.length} entries <span><button type="button">‹</button><b>1</b><button type="button">2</button><button type="button">3</button><button type="button">›</button></span></div> */}
                         </section>
 
 
