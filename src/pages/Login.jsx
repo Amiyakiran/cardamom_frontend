@@ -99,7 +99,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
         checkAuth()
         if (result.data.user.email == "greengoldspices.ndkm@gmail.com") {
           setTimeout(() => {
-            navigate("/admin/dashboard")
+            navigate(`/admin/${result.data.user.id}/dashboard`)
           }, 5005)
         }
         else {
@@ -135,7 +135,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
       toast.success("Login successful!")
       if (result.data.user.name == "Shivapriya" || result.data.user.email ==='greengoldspices.ndkm@gmail.com') {
         setTimeout(() => {
-          navigate("/admin/dashboard")
+          navigate(`/admin/${result.data.user.id}/dashboard`)
         }, 5005)
       }
       else {

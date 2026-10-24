@@ -21,7 +21,7 @@ import {
   faUsers,
   faWrench,
 } from '@fortawesome/free-solid-svg-icons'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import Sidebar from '../../components/admincomponents/Sidebar'
 import AdminHeader from '../../components/admincomponents/AdminHeader'
 import './Adminsetting.css'
@@ -49,13 +49,15 @@ const initialSettings = {
 }
 
 const quickActions = [
-  { label: 'Add New Product', to: '/admin/products', icon: faCirclePlus },
-  { label: 'View Orders', to: '/admin/orders', icon: faBoxOpen },
-  { label: 'Manage Inventory', to: '/admin/inventory', icon: faLayerGroup },
-  { label: 'View Customers', to: '/admin/customers', icon: faUsers },
+  { label: 'Add New Product', path: 'products', icon: faCirclePlus },
+  { label: 'View Orders', path: 'orders', icon: faBoxOpen },
+  { label: 'Manage Inventory', path: 'inventory', icon: faLayerGroup },
+  { label: 'View Customers', path: 'customers', icon: faUsers },
 ]
 
 function Adminsetting() {
+  const { id } = useParams()
+  const adminBasePath = `/admin/${id}`
   const [settings, setSettings] = useState(initialSettings)
   const [activeTab, setActiveTab] = useState('General')
   const [storeLogo, setStoreLogo] = useState('/assets/ggs.png')
@@ -215,7 +217,7 @@ function Adminsetting() {
               <h2>Quick Actions</h2>
               <div>
                 {quickActions.map((action) => (
-                  <Link key={action.label} to={action.to}>
+                  <Link key={action.label} to={`${adminBasePath}/${action.path}`}>
                     <FontAwesomeIcon icon={action.icon} aria-hidden="true" />
                     <span>{action.label}</span>
                     <FontAwesomeIcon className="settings-action-arrow" icon={faChevronDown} aria-hidden="true" />

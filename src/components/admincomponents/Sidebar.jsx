@@ -12,22 +12,24 @@ import {
   faUsers,
 } from '@fortawesome/free-solid-svg-icons'
 import './Sidebar.css'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useParams } from 'react-router-dom'
 
 const navigationItems = [
-  { label: 'Dashboard', path: '/admin/dashboard', icon: faChartColumn },
-  { label: 'Products', path: '/admin/products', icon: faBoxOpen},
-  { label: 'Orders', path: '/admin/orders', icon: faReceipt},
-  { label: 'Inventory', path: '/admin/inventory', icon: faBoxOpen },
-  { label: 'Customers', path: '/admin/customers', icon: faUsers},
-  { label: 'Blog', path: '/admin/blog', icon: faFileLines },
+  { label: 'Dashboard', path: 'dashboard', icon: faChartColumn },
+  { label: 'Products', path: 'products', icon: faBoxOpen},
+  { label: 'Orders', path: 'orders', icon: faReceipt},
+  { label: 'Inventory', path: 'inventory', icon: faBoxOpen },
+  { label: 'Customers', path: 'customers', icon: faUsers},
+  { label: 'Blog', path: 'blog', icon: faFileLines },
   // { label: 'Reports', path: '/admin/reports', icon: faChartColumn },
   // { label: 'Coupons', path: '/admin/coupons', icon: faTag },
-  { label: 'Settings', path: '/admin/settings', icon: faGear },
+  { label: 'Settings', path: 'settings', icon: faGear },
 ]
 
 function Sidebar({ activeItem = 'Blog', onNavigate }) {
   const [isOpen, setIsOpen] = useState(false)
+  const { id } = useParams()
+  const adminBasePath = `/admin/${id}`
 
   const handleNavigate = (label) => {
     onNavigate?.(label)
@@ -58,7 +60,7 @@ function Sidebar({ activeItem = 'Blog', onNavigate }) {
       {/* <div className="admin-sidebar-design__brand">
         <img src="/assets/logo.png" alt="Green Gold Cardamom" loading="lazy" decoding="async" />
       </div> */}
-        <Link className="site-brand" to="/admin/dashboard" aria-label="Green Gold home">
+        <Link className="site-brand" to={`${adminBasePath}/dashboard`} aria-label="Green Gold home">
         <img className="site-brand-mark" src="/assets/ggs.png" alt="" loading="lazy" decoding="async" />
         {/* <span className="site-brand-copy">
           <strong>GREEN GOLD</strong>
@@ -71,7 +73,7 @@ function Sidebar({ activeItem = 'Blog', onNavigate }) {
           <NavLink
             className={({ isActive }) => item.label === activeItem || isActive ? 'is-active' : ''}
             key={item.label}
-            to={item.path}
+            to={`${adminBasePath}/${item.path}`}
             onClick={() => handleNavigate(item.label)}
           >
             <FontAwesomeIcon icon={item.icon} aria-hidden="true" />

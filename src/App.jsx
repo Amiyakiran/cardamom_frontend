@@ -33,13 +33,13 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/:user-profile/:id" element={<Profile />} />
         <Route path="/all-products" element={<Allproducts />} />
-        <Route path="/admin/dashboard" element={<Admindashboard />} />
-        <Route path="/admin/products" element={<Adminproducts />} />
-        <Route path="/admin/orders" element={<Adminorders />} />
-        <Route path="/admin/inventory" element={<Admininventory />} />
-        <Route path="/admin/customers" element={<Admincustomers />} />
-        <Route path="/admin/blog" element={<AdminBlog />} />
-        <Route path="/admin/settings" element={<Adminsetting />} />
+        <Route path="/admin/:id/dashboard" element={<Admindashboard />} />
+        <Route path="/admin/:id/products" element={<Adminproducts />} />
+        <Route path="/admin/:id/orders" element={<Adminorders />} />
+        <Route path="/admin/:id/inventory" element={<Admininventory />} />
+        <Route path="/admin/:id/customers" element={<Admincustomers />} />
+        <Route path="/admin/:id/blog" element={<AdminBlog />} />
+        <Route path="/admin/:id/settings" element={<Adminsetting />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

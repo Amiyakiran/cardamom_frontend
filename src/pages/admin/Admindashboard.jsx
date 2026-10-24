@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBoxOpen,faCalendarDays,faChevronRight,faCircleCheck,faClock,faCreditCard,faLeaf,faReceipt,faShoppingBag,faTriangleExclamation,faTruckFast,faUsers,faWallet,} from '@fortawesome/free-solid-svg-icons'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import Sidebar from '../../components/admincomponents/Sidebar'
 import AdminHeader from '../../components/admincomponents/AdminHeader'
 import { getAllInventoriesApi, getAllOrdersApi, getAllProductApi, getAllUsersApi } from '../../services/allApi'
@@ -41,6 +41,9 @@ const formatCurrency = (amount) => `₹${Number(amount || 0).toLocaleString('en-
 
 
 function Admindashboard() {
+  const { id } = useParams()
+  const adminBasePath = `/admin/${id}`
+
 
   //states--------------------------------------
   const [orders, setOrders] = useState([])
@@ -215,7 +218,7 @@ function Admindashboard() {
             <section className="dashboard-panel dashboard-order-overview">
               <div className="dashboard-panel-heading">
                 <h2><FontAwesomeIcon icon={faShoppingBag} aria-hidden="true" /> Order Overview</h2>
-                <Link to="/admin/orders">View all orders <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
+                <Link to={`${adminBasePath}/orders`}>View all orders <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
               </div>
               <div className="dashboard-overview-list">
                 <article className="dashboard-overview-row is-placed">
@@ -240,7 +243,7 @@ function Admindashboard() {
             <section className="dashboard-panel dashboard-inventory-alerts">
               <div className="dashboard-panel-heading">
                 <h2><FontAwesomeIcon icon={faBoxOpen} aria-hidden="true" /> Inventory Alerts</h2>
-                <Link to="/admin/inventory">View inventory <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
+                <Link to={`${adminBasePath}/inventory`}>View inventory <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
               </div>
               <div className="dashboard-alert-list">
                 <article className="dashboard-alert-row is-low">
@@ -264,7 +267,7 @@ function Admindashboard() {
             <section className="dashboard-panel dashboard-top-products">
               <div className="dashboard-panel-heading">
                 <h2><FontAwesomeIcon icon={faLeaf} aria-hidden="true" /> Top-Selling Products</h2>
-                <Link to="/admin/products">View all products <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
+                <Link to={`${adminBasePath}/products`}>View all products <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
               </div>
               <div className="dashboard-product-list">
                 {loading ? <p className="dashboard-empty">Loading product sales…</p> : topProducts.length === 0 ? (
@@ -292,7 +295,7 @@ function Admindashboard() {
             <section className="dashboard-panel dashboard-recent-orders">
               <div className="dashboard-panel-heading">
                 <h2><FontAwesomeIcon icon={faReceipt} aria-hidden="true" /> Recent Orders</h2>
-                <Link to="/admin/orders">View all orders <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
+                <Link to={`${adminBasePath}/orders`}>View all orders <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
               </div>
               <div className="dashboard-table-scroll">
                 <table className="dashboard-table">
@@ -317,7 +320,7 @@ function Admindashboard() {
             <section className="dashboard-panel dashboard-recent-activity">
               <div className="dashboard-panel-heading">
                 <h2><FontAwesomeIcon icon={faClock} aria-hidden="true" /> Recent Activity</h2>
-                <Link to="/admin/orders">View all activity <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
+                <Link to={`${adminBasePath}/orders`}>View all activity <FontAwesomeIcon icon={faChevronRight} aria-hidden="true" /></Link>
               </div>
               {recentActivity.length === 0 ? (
                 <p className="dashboard-empty">{loading ? 'Loading activity…' : 'No recent activity.'}</p>
