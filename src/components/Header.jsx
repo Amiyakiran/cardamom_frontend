@@ -1,12 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-regular-svg-icons'
-import { faChevronDown, faRightFromBracket ,faAddressCard} from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faRightFromBracket, faAddressCard } from '@fortawesome/free-solid-svg-icons'
 import './Header.css'
 import { useContext, useState } from 'react'
 import { AuthContext } from '../context/ContextShare'
 import { logoutApi } from '../services/allApi'
-import {googleLogout } from '@react-oauth/google';
+import { googleLogout } from '@react-oauth/google';
 
 function Header({ activePage = '' }) {
   const { user, setUser, userId } = useContext(AuthContext)
@@ -18,18 +18,20 @@ function Header({ activePage = '' }) {
     setUser("")
     setMenuOpen(false)
     navigate('/login')
-     googleLogout(); // Clears Google session
+    googleLogout(); // Clears Google session
   }
 
   return (
     <header className="site-header">
       <Link className="site-brand" to="/" aria-label="Green Gold home">
         <img className="site-brand-mark" src="/assets/ggs.png" alt="logo" fetchPriority="high" decoding="async" />
-       
+
       </Link>
 
       <nav className="site-nav" aria-label="Main navigation">
         <Link className={activePage === 'home' ? 'active' : ''} to="/">HOME</Link>
+        <Link className={activePage === 'allproducts' ? 'active' : ''} to="/all-products">SPICES</Link>
+
         <Link className={activePage === 'about' ? 'active' : ''} to="/about">ABOUT US</Link>
         <Link className={activePage === 'blog' ? 'active' : ''} to="/blog">BLOG</Link>
         <Link className={activePage === 'contact' ? 'active' : ''} to="/contact">CONTACT</Link>

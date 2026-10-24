@@ -214,7 +214,7 @@ function Allproducts() {
 
   return (
     <div className="products-page">
-      <Header activePage="products" />
+      <Header activePage = 'allproducts' />
 
       <main style={{ marginBottom: '80px' }}>
         <section className="products-hero">

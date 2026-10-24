@@ -266,44 +266,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              {/* {reset_password && <div>
-                <label className="field-label">NEW PASSWORD</label>
-                <div className="input-group">
-                <span className="icon"><FontAwesomeIcon icon={faLock} /></span>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="eye"
-                  onClick={() => setShowPassword((s) => !s)}
-                  aria-label="toggle password"
-                >
-                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                </button>
-              </div>
-              <label className="field-label">CONFORM PASSWORD</label>
-              <div className="input-group">
-                <span className="icon"><FontAwesomeIcon icon={faLock} /></span>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="eye"
-                  onClick={() => setShowPassword((s) => !s)}
-                  aria-label="toggle password"
-                >
-                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                </button>
-              </div>
-              </div>} */}
+            
 
               {!forgetPassword && <label className="field-label">{reset_password ? 'NEW PASSWORD' : 'PASSWORD'}</label>}
               {!forgetPassword && <div className="input-group">
@@ -365,9 +328,9 @@ export default function Login({ register, forgetPassword, reset_password }) {
               {!register && <div className="divider">OR</div>}
 
               {!register && (
-                // <button className="btn ghost" type="button"><FontAwesomeIcon icon={faUser} /> LOGIN WITH GOOGLE</button>
+               
                 <div className="google-login-wrapper" ref={googleLoginContainerRef}>
-                  <GoogleLogin width={googleButtonWidth} text="signin"
+                  <GoogleLogin width={googleButtonWidth} text="Google signin"
                     onSuccess={credentialResponse => {
                       // console.log(credentialResponse);
                       handleLoginSuccess(credentialResponse)
