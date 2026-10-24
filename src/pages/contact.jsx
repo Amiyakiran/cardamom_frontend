@@ -95,7 +95,7 @@ export default function Contact() {
         </video> */}
         <div className="contact-hero-overlay" />
         <Header activePage="contact" />
-        <div className="contact-hero-copy">
+        <div className="contact-hero-copy" fetchPriority="high" decoding="async">
           <div className="eyebrow light"><span>♧</span> GET IN TOUCH <i /></div>
           <h1>We&apos;d Love to Hear <br />From You</h1>
           <p>Whether you have a question, a partnership idea,<br className="desktop-break" /> or simply want to know more about our cardamom —<br className="desktop-break" /> we&apos;re here to help.</p>

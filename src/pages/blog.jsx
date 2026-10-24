@@ -105,7 +105,7 @@ export default function Blog() {
 
   return (
     <div className="blog-page">
-      <section className="hero-banner">
+      <section className="hero-banner" fetchPriority="high" decoding="async">
 
         <div className="hero-overlay" />
         <Header activePage="blog" />

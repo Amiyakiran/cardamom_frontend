@@ -38,7 +38,7 @@ export default function About() {
       <Header activePage="about" />
 
       <main className="about-story-page">
-        <section className="about-story-header">
+        <section className="about-story-header" fetchPriority="high" decoding="async">
           <div className="overlay" />
           <div className="about-story-copy">
             <p className="about-story-kicker mini-title"><span>♧</span> OUR STORY <i/></p>

@@ -435,7 +435,7 @@ Please follow the provided instructions to complete your payment. Kindly include
   return (
     <div className="profile-page">
       <Header />
-      <div className="profile-hero">
+      <div className="profile-hero" fetchPriority="high" decoding="async">
         <div className='overlayer' />
         <header className="profile-heading">
           <p className="profile-eyebrow mini-title"><span>♧</span>Your account <i /></p>

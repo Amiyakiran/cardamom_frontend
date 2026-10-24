@@ -217,7 +217,7 @@ function Allproducts() {
       <Header activePage = 'allproducts' />
 
       <main style={{ marginBottom: '80px' }}>
-        <section className="products-hero">
+        <section className="products-hero" fetchPriority="high" decoding="async">
           <div className="products-hero-copy">
             <p className="products-eyebrow mini-title"><span>♧</span>Pure spices. Naturally.<i /></p>
             <h1>Our Products</h1>

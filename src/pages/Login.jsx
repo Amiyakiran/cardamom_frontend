@@ -207,7 +207,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
 
 
   return (
-    <div className="page-wrap">
+    <div className="page-wrap" fetchPriority="high" decoding="async">
      
 
 
