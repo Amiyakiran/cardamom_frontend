@@ -1,5 +1,12 @@
 {
-    "rewrites":[
-        {"source":"/(.*)","destination":"/index.html"}
+    "rewrites": [
+        {
+            "source": "/api/:path*",
+            "destination": "https://cardamom-server-1.onrender.com/:path*"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
     ]
 }
