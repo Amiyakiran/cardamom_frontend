@@ -74,19 +74,7 @@ font-size: 11px !important;
   letter-spacing: .28em;
   white-space: nowrap;
 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
-/* .site-nav1 a,
-.site-login1 {
-  position: relative;
-  padding: 12px 0;
-  border: 0;
-  background: none;
-  color: black;
-  cursor: pointer;
-  font-size: 11px ;
-  text-decoration: none;
-  letter-spacing: .28em;
-  white-space: nowrap;
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;} */
+
 
 .site-nav a.active,
 .site-nav a:hover {
@@ -109,6 +97,9 @@ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;} */
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+}
+.site-tools span{
+  font-size: 11px;
 }
 
 .account-menu {
@@ -185,7 +176,12 @@ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;} */
   .site-nav {
     gap: 18px;
     margin-right: 18px;
+    font-size: 9px;
   }
+  .site-tools span{
+  font-size: 9px;
+}
+
 }
 
 @media (max-width: 680px) {
@@ -195,6 +191,10 @@ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;} */
     flex-wrap: wrap;
     padding: 10px 0;
   }
+  .site-tools span{
+  font-size: 9px;
+}
+
 
   .site-brand {
     min-width: 0;
@@ -220,7 +220,7 @@ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;} */
   }
 
   .site-nav a {
-    font-size: 12px;
+    font-size: 9px;
   }
 
   .site-login {
