@@ -19,14 +19,14 @@
   gap: 12px;
   color: #fffdf4;
   text-decoration: none;
-  flex-shrink: 0;
+  flex: 0 0 auto;
 }
 
 .site-brand-mark {
-  width: 130px;
-  height: 130px;
+  width: clamp(64px, 9vw, 76px);
+  height: 76px;
   object-fit: contain;
-  margin-bottom: 15px;
+  flex-shrink: 0;
 }
 
 .site-brand-copy {
@@ -201,11 +201,6 @@ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;} */
     gap: 8px;
   }
 
-  .site-brand-mark {
-    width: 100px;
-    height: 100px;
-  }
-
   .site-brand-copy strong {
     font-size: 17px;
     white-space: nowrap;
@@ -248,10 +243,6 @@ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;} */
 }
 
 @media (max-width: 380px) {
-  .site-brand-mark {
-    width: 100px;
-  }
-
   .site-brand-copy strong {
     font-size: 15px;
   }
