@@ -513,7 +513,7 @@
 
 @media (max-width:540px) {
     .contact-hero {
-        min-height: 510px;
+        min-height:100vh;
     }
 
     .contact-header {

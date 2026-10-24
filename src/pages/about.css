@@ -29,6 +29,7 @@
     margin-bottom: 30px;
     background-image: url('/assets/aboutbg1.png') !important;
     background-size: cover;
+   
     background-position: center;
     background-repeat: no-repeat;
     height: min(100svh, 900px);
@@ -335,7 +336,7 @@
 
 @media (max-width: 900px) {
     .about-story-header {
-        min-height: 560px;
+        min-height: 100vh;
         padding-right: 32px;
         padding-left: 32px;
     }
@@ -354,14 +355,19 @@
 
 @media (max-width: 640px) {
     .about-story-header {
-        height: min(82svh, 700px);
+        height:100vh;
         min-height: 500px;
         padding: 100px 22px 24px;
+       
+    }
+    .about-story-copy {
+        margin-top: 100px;
     }
 
     .about-story-copy h1 {
         font-size: clamp(36px, 11vw, 52px);
         line-height: 1;
+       
     }
 
     .about-story-copy p:last-child {

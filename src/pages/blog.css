@@ -503,7 +503,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    min-height: 620px;
+    min-height: 100vh;
     padding: 120px 28px 30px;
   }
 
@@ -553,7 +553,7 @@
   }
 
   .hero-banner {
-    min-height: 540px;
+    min-height: 100vh;
     padding-top: 110px;
   }
 

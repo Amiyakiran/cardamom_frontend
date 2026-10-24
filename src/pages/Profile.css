@@ -23,8 +23,8 @@
   width: 100%;
   background: url('/assets/aboutbg.png') bottom / cover no-repeat;
   background-position: bottom;
-  height: min(100svh, 900px);
-  min-height: 620px;
+
+  min-height: 100vh;
 }
 
 .overlayer {
@@ -790,8 +790,7 @@
   }
 
   .profile-hero {
-    height: min(78svh, 680px);
-    min-height: 520px;
+   height: 100vh;
   }
 
   .profile-heading {
