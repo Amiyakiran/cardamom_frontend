@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react' // React state hook for form inputs
+import { useContext, useEffect, useRef, useState } from 'react' // React state hook for form inputs
 import './Login.css' // Import the login page styles
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' // Icon component
 import { faLock, faEye, faEyeSlash, faArrowRight } from '@fortawesome/free-solid-svg-icons' // Solid icons used on the page
@@ -23,9 +23,26 @@ export default function Login({ register, forgetPassword, reset_password }) {
   const [showPassword, setShowPassword] = useState(false) // Toggles password visibility
   const [showPswd, setShowPswd] = useState(false)
   const [remember, setRemember] = useState(false) // Tracks whether the “remember me” checkbox is checked
+  const [googleButtonWidth, setGoogleButtonWidth] = useState(400)
+  const googleLoginContainerRef = useRef(null)
   const navigate = useNavigate() // React Router hook for navigation
   const { checkAuth } = useContext(AuthContext)
   const params = useParams()
+
+  useEffect(() => {
+    const container = googleLoginContainerRef.current
+    if (!container) return undefined
+
+    const updateButtonWidth = () => {
+      setGoogleButtonWidth(Math.min(400, Math.floor(container.clientWidth)))
+    }
+
+    updateButtonWidth()
+    const observer = new ResizeObserver(updateButtonWidth)
+    observer.observe(container)
+
+    return () => observer.disconnect()
+  }, [register])
 
 
 
@@ -349,16 +366,18 @@ export default function Login({ register, forgetPassword, reset_password }) {
 
               {!register && (
                 // <button className="btn ghost" type="button"><FontAwesomeIcon icon={faUser} /> LOGIN WITH GOOGLE</button>
-                <GoogleLogin className="google" width={'500px'}
-                  onSuccess={credentialResponse => {
-                    // console.log(credentialResponse);
-                    handleLoginSuccess(credentialResponse)
-                  }}
-                  onError={() => {
-                    // console.log('Login Failed');
+                <div className="google-login-wrapper" ref={googleLoginContainerRef}>
+                  <GoogleLogin width={googleButtonWidth}
+                    onSuccess={credentialResponse => {
+                      // console.log(credentialResponse);
+                      handleLoginSuccess(credentialResponse)
+                    }}
+                    onError={() => {
+                      // console.log('Login Failed');
 
-                  }}
-                />
+                    }}
+                  />
+                </div>
               )}
 
               {!register ? (

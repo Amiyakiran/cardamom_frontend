@@ -319,6 +319,12 @@ input::placeholder {
     color: rgba(220, 230, 200, 0.562)
 }
 
+.google-login-wrapper {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
 .register {
     margin-top: 12px;
     text-align: center;
@@ -362,6 +368,15 @@ input::placeholder {
 }
 
 @media (max-width: 540px) {
+    .right-panel {
+        padding: 12px;
+    }
+
+    .card {
+        width: 100%;
+        padding: 24px 16px;
+    }
+
     .brand-title {
         font-size: clamp(1.8rem, 8vw, 2.6rem);
     }
