@@ -367,7 +367,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
               {!register && (
                 // <button className="btn ghost" type="button"><FontAwesomeIcon icon={faUser} /> LOGIN WITH GOOGLE</button>
                 <div className="google-login-wrapper" ref={googleLoginContainerRef}>
-                  <GoogleLogin width={googleButtonWidth}
+                  <GoogleLogin width={googleButtonWidth} text="signin"
                     onSuccess={credentialResponse => {
                       // console.log(credentialResponse);
                       handleLoginSuccess(credentialResponse)
