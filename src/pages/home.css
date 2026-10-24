@@ -35,21 +35,22 @@
 }
 
 .home-hero-copy {
-  position: relative;
+  position: absolute;
+  top: 50%;
   z-index: 2;
   width: min(560px, calc(100% - 40px));
-  padding-top: 35vh;
+  transform: translateY(-50%);
   margin-left: max(40px, calc((100% - 1070px) / 2));
   animation: blog-hero-copy-in 900ms ease-out both;
 }
 @keyframes blog-hero-copy-in {
   from {
     opacity: 0;
-    transform: translateX(-80px);
+    transform: translate(-80px, -50%);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate(0, -50%);
   }
 }
 
@@ -498,6 +499,7 @@
 
   .home-hero-copy {
     margin-left: 28px;
+    
   }
 
   .home-process-step {
@@ -518,7 +520,6 @@
 @media (max-width: 620px) {
   .home-hero-copy {
     width: calc(100% - 24px);
-    padding-top: 24vh;
     margin-left: 12px;
   }
 
