@@ -24,7 +24,7 @@ function Header({ activePage = '' }) {
   return (
     <header className="site-header">
       <Link className="site-brand" to="/" aria-label="Green Gold home">
-        <img className="site-brand-mark" src="/assets/ggs.png" alt="logo" />
+        <img className="site-brand-mark" src="/assets/ggs.png" alt="logo" fetchPriority="high" decoding="async" />
         {/* <span className="site-brand-copy">
           <strong>GREEN GOLD</strong>
           <small>SPICES</small>

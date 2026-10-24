@@ -50,7 +50,7 @@ useEffect(() => {
     <div className="home-page">
       <section className="home-hero">
         <div className="home-hero-image">
-          <img className="home-hero-image-asset" src="/assets/hero_IMAGE.png" alt="Fresh cardamom pods" />
+          <img className="home-hero-image-asset" src="/assets/hero_IMAGE.png" alt="Fresh cardamom pods" fetchPriority="high" decoding="async" />
         </div>
         <div className="home-hero-shade" />
         <Header activePage="home" />
@@ -72,7 +72,7 @@ useEffect(() => {
             {products.map((item, index) => (
               <article className="home-product-card" key={item.title}>
                 <div className={`home-product-visual visual-${index + 1}`}>
-                  <img className="home-product-image" src={`${serverUrl}/uploads/${item.image}`} alt={item.title} />
+                  <img className="home-product-image" src={`${serverUrl}/uploads/${item.image}`} alt={item.title} loading="lazy" decoding="async" />
                 </div>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>

@@ -482,7 +482,7 @@ Please follow the provided instructions to complete your payment. Kindly include
                       {paginatedWishlist.map((pro, index) => (
                         <div className="col-md-4" key={index}>
                           <div className="card border-0 shadow-none my-3 w-100 p-0 rounded-0" >
-                            <img src={`${serverUrl}/uploads/${pro.image}`} alt={pro.title} style={{ height: '100px' }} />
+                            <img src={`${serverUrl}/uploads/${pro.image}`} alt={pro.title} style={{ height: '100px' }} loading="lazy" decoding="async" />
                             <p className='card-title mt-1 px-1'>{pro.title}</p>
                             <p className='card-des px-1'>{pro.description.slice(0, 55)}...</p>
                             <div className='d-flex justify-content-between px-1'>
@@ -556,7 +556,7 @@ Please follow the provided instructions to complete your payment. Kindly include
                         {cartArray.map((pro, index) => (
                           <tr key={index}>
                             <td>
-                              <img src={`${serverUrl}/uploads/${pro.image}`} alt={pro.title} style={{ width: '100px', height: '50px' }} />
+                              <img src={`${serverUrl}/uploads/${pro.image}`} alt={pro.title} style={{ width: '100px', height: '50px' }} loading="lazy" decoding="async" />
                             </td>
                             <td><p>{pro.title}</p>
                               <small >{pro.varient}</small>
@@ -678,7 +678,7 @@ Please follow the provided instructions to complete your payment. Kindly include
               <section className="profile-card profile-account-card" id="account">
                 <label >
                   <div className="profile-card-avatar" aria-hidden="true">
-                    {profile?.photo ? <img src={`${serverUrl}/uploads/${profile.photo}`} alt="Profile" /> : initials}
+                    {profile?.photo ? <img src={`${serverUrl}/uploads/${profile.photo}`} alt="Profile" loading="lazy" decoding="async" /> : initials}
                     <input type="file" style={{ display: 'none' }} onChange={(e) => updateProfileImage(e.target.files[0])} />
                     <FontAwesomeIcon onClick={handleShow} id='editicon' icon={faPenToSquare} aria-hidden="true" />
                   </div>
@@ -718,7 +718,7 @@ Please follow the provided instructions to complete your payment. Kindly include
               </section>
 
               <Link className="profile-promo" to="/all-products" aria-label="Explore Green Gold spices">
-                <img src="/assets/dashboardImg.png" alt="Green cardamom and whole spices" />
+                <img src="/assets/dashboardImg.png" alt="Green cardamom and whole spices" loading="lazy" decoding="async" />
                 <span className="profile-promo-copy">
                   <strong>Fresh Spices,<br />Better Living</strong>
                   <small>Pure. Natural. Always.</small>

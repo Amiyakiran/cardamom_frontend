@@ -277,7 +277,7 @@ function Adminproducts() {
                                                 <tr key={item._id || index}>
 
                                                     <td>
-                                                        <img src={`${serverUrl}/uploads/${item.image}`} alt="" />
+                                                        <img src={`${serverUrl}/uploads/${item.image}`} alt="" loading="lazy" decoding="async" />
                                                     </td>
                                                     <td>
                                                         <strong>{item.title}</strong>

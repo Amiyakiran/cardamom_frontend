@@ -138,7 +138,7 @@ export default function Contact() {
         </section>
 
         <aside className="farm-panel contact-reveal reveal-right contact-reveal-delay">
-          <div className="farm-photo"><img src="/assets/farm.png" alt="Cardamom flowers in the hills" /></div>
+          <div className="farm-photo"><img src="/assets/farm.png" alt="Cardamom flowers in the hills" loading="lazy" decoding="async" /></div>
           <div className="eyebrow"><span>♧</span> VISIT OUR FARM <i /></div>
           <p>Experience the journey of pure cardamom straight from our <br />lush green hills.</p>
           {/* <div className="map-frame-wrap">

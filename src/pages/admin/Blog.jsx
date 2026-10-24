@@ -285,7 +285,7 @@ function Blog() {
                                             <tr key={post._id || post.title}>
 
                                                 <td>
-                                                    <img src={post.image?.startsWith('/') ? post.image : `${serverUrl}/uploads/${post.image}`} alt={post.title} />
+                                                    <img src={post.image?.startsWith('/') ? post.image : `${serverUrl}/uploads/${post.image}`} alt={post.title} loading="lazy" decoding="async" />
                                                 </td>
                                                 <td>
                                                     <strong>{post.title}</strong>

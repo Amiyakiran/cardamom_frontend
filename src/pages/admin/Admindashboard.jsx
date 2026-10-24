@@ -273,7 +273,7 @@ function Admindashboard() {
                   const maximumSales = Math.max(1, topProducts[0].unitsSold)
                   return (
                     <article className="dashboard-product-row" key={product._id || product.title}>
-                      <img src={product.image ? `${serverUrl}/uploads/${product.image}` : '/assets/hero_IMAGE.png'} alt="" />
+                      <img src={product.image ? `${serverUrl}/uploads/${product.image}` : '/assets/hero_IMAGE.png'} alt="" loading="lazy" decoding="async" />
                       <div className="dashboard-product-info">
                         <strong>{product.title}</strong>
                         <small>{product.unitsSold} units sold</small>

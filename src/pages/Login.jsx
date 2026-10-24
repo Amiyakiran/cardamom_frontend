@@ -201,7 +201,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
         <div className="left-panel">
           <div className="left-overlay md:ml-40">
             <div className="brand">
-              <img src="/assets/ggs1.png" alt="Green Gold" className="brand-logo" />
+              <img src="/assets/ggs1.png" alt="Green Gold" className="brand-logo" loading="lazy" decoding="async" />
               <h1 className="brand-title">GREEN GOLD</h1>
               <div className="brand-sub">SPICES</div>
               {/* <div className="promo">
@@ -220,7 +220,7 @@ export default function Login({ register, forgetPassword, reset_password }) {
             <div className="card-head ">
               <div className="welcome">WELCOME BACK</div>
               {!register ? <h3 className="title">Login to your account</h3> : forgetPassword ? <h3 className="title">Reset Paasword</h3> : <h3 className="title">Create your account</h3>}
-              <img src="/assets/leaf.png" alt="Green Gold" className="brand-logo small" />
+              <img src="/assets/leaf.png" alt="Green Gold" className="brand-logo small" loading="lazy" decoding="async" />
             </div>
 
             <form className="login-form">

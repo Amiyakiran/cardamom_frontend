@@ -337,7 +337,7 @@ function Adminorders() {
                 <div className="orders-item-list">
                   {viewOrder.products?.map((product) => (
                     <div className="orders-detail-item" key={product.name}>
-                      <img src={`${serverUrl}/uploads/${product.image}`} alt="" style={{ objectPosition: product.imagePosition }} />
+                      <img src={`${serverUrl}/uploads/${product.image}`} alt="" style={{ objectPosition: product.imagePosition }} loading="lazy" decoding="async" />
                       <div><span>{product.title}</span><strong>{product.name}</strong><small>Qty : {product.quantity} <span>·</span> ₹ {product.price}</small> <small> count :  {product.count}</small></div>
                     </div>
                   ))} 

@@ -270,6 +270,8 @@ function Allproducts() {
                           className="spice-product-image"
                           src={image}
                           alt={product.title}
+                          loading="lazy"
+                          decoding="async"
                           style={{ objectPosition: product.imagePosition || `${50 + (index % 4) * 8}% center` }} />
 
                         {Number(product.stock) <= 0 ? (
@@ -335,6 +337,8 @@ function Allproducts() {
                           className="spice-product-image"
                           src={image}
                           alt={product.title}
+                          loading="lazy"
+                          decoding="async"
                           style={{ objectPosition: product.imagePosition || `${50 + (index % 4) * 8}% center` }} />
 
                         {Number(product.stock) <= 0 ? (
@@ -400,6 +404,8 @@ function Allproducts() {
                           className="spice-product-image"
                           src={image}
                           alt={product.title}
+                          loading="lazy"
+                          decoding="async"
                           style={{ objectPosition: product.imagePosition || `${50 + (index % 4) * 8}% center` }} />
 
                         {Number(product.stock) <= 0 ? (

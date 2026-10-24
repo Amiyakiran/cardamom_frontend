@@ -293,7 +293,7 @@ function Admininventory() {
                        <tr key={row.productId}>
                           <td>
                             <div className="inventory-product">
-                              {row.image && <img src={`${serverUrl}/uploads/${row.image}`} alt="" />}
+                              {row.image && <img src={`${serverUrl}/uploads/${row.image}`} alt="" loading="lazy" decoding="async" />}
                               <span><strong>{row.title}</strong><small>{row.varient}</small></span>
                             </div>
                           </td>

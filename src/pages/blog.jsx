@@ -140,7 +140,7 @@ export default function Blog() {
           <div className="post-grid" ref={postGridRef}>
             {filteredPosts.length > 0 ? filteredPosts.map((item, index) => (
               <article key={item._id || item.id || index} className="blog-card">
-                <img src={`${serverUrl}/uploads/${item.image}`} alt={item.title} />
+                <img src={`${serverUrl}/uploads/${item.image}`} alt={item.title} loading="lazy" decoding="async" />
                 <div className="card-body">
                   <div className="meta-row">
                     <span className="meta-tag">{item.category}</span>
@@ -200,7 +200,7 @@ export default function Blog() {
                 <ToastContainer position='top-right' autoClose={3000} theme='colored' />
 
       <Offcanvas show={show} onHide={handleClose} placement='top'  className="custom-offcanvas p-5">
-        <img src="./assets/ggs1.png" alt="logo" style={{width:'50px', height:'50px', marginLeft:'10px'}} />
+        <img src="./assets/ggs1.png" alt="logo" style={{width:'50px', height:'50px', marginLeft:'10px'}} loading="lazy" decoding="async" />
         <Offcanvas.Header closeButton style={{flexDirection:'column'}}>
           <Offcanvas.Title className='blogtitle'><h1>{viewBlog.title}</h1></Offcanvas.Title>
                   <small>{viewBlog.shortDescription}</small>
@@ -217,6 +217,8 @@ export default function Blog() {
                   className="blog-detail-image"
                   src={`${serverUrl}/uploads/${viewBlog.image}`}
                   alt={viewBlog.title}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className='d-flex justify-content-between mt-3'>
                   <p>Author : {viewBlog.author}</p>

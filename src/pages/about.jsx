@@ -63,7 +63,7 @@ export default function About() {
         </div>
 
         <div className="about-step-visual">
-          <img src='/assets/harvest.png' alt="First image" />
+          <img src='/assets/harvest.png' alt="First image" loading="lazy" decoding="async" />
           {/* {step.tag && <span className="step-tag">{step.tag} <b>+</b></span>} */}
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function About() {
         </div>
 
         <div className="about-step-visual">
-          <img src='/assets/cleaning.png' alt="First image" />
+          <img src='/assets/cleaning.png' alt="First image" loading="lazy" decoding="async" />
           {/* {step.tag && <span className="step-tag">{step.tag} <b>+</b></span>} */}
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function About() {
         </div>
 
         <div className="about-step-visual">
-          <img src='/assets/sorting.png' alt="First image" />
+          <img src='/assets/sorting.png' alt="First image" loading="lazy" decoding="async" />
           {/* {step.tag && <span className="step-tag">{step.tag} <b>+</b></span>} */}
         </div>
       </div>
@@ -116,7 +116,7 @@ export default function About() {
         </div>
 
         <div className="about-step-visual">
-          <img src='/assets/grading.png' alt="First image" />
+          <img src='/assets/grading.png' alt="First image" loading="lazy" decoding="async" />
           {/* {step.tag && <span className="step-tag">{step.tag} <b>+</b></span>} */}
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function About() {
         </div>
 
         <div className="about-step-visual">
-          <img src='/assets/quality.png' alt="First image" />
+          <img src='/assets/quality.png' alt="First image" loading="lazy" decoding="async" />
           {/* {step.tag && <span className="step-tag">{step.tag} <b>+</b></span>} */}
         </div>
       </div>
@@ -153,7 +153,7 @@ export default function About() {
         </div>
 
         <div className="about-step-visual img6">
-          <img src='/assets/banner.png' alt="First image" />
+          <img src='/assets/banner.png' alt="First image" loading="lazy" decoding="async" />
 
         </div>
       </div>

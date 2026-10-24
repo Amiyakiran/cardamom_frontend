@@ -56,10 +56,10 @@ function Sidebar({ activeItem = 'Blog', onNavigate }) {
       )}
       <aside id="admin-navigation" className={`admin-sidebar-design${isOpen ? ' is-open' : ''}`}>
       {/* <div className="admin-sidebar-design__brand">
-        <img src="/assets/logo.png" alt="Green Gold Cardamom" />
+        <img src="/assets/logo.png" alt="Green Gold Cardamom" loading="lazy" decoding="async" />
       </div> */}
         <Link className="site-brand" to="/admin/dashboard" aria-label="Green Gold home">
-        <img className="site-brand-mark" src="/assets/ggs.png" alt="" />
+        <img className="site-brand-mark" src="/assets/ggs.png" alt="" loading="lazy" decoding="async" />
         {/* <span className="site-brand-copy">
           <strong>GREEN GOLD</strong>
           <small>SPICES</small>
