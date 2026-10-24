@@ -482,7 +482,7 @@ Please follow the provided instructions to complete your payment. Kindly include
                       {paginatedWishlist.map((pro, index) => (
                         <div className="col-md-4" key={index}>
                           <div className="card border-0 shadow-none my-3 w-100 p-0 rounded-0" >
-                            <img src={`${serverUrl}/uploads/${pro.image}`} alt={pro.title} style={{ height: '100px' }} loading="lazy" decoding="async" />
+                            <img src={`${serverUrl}/uploads/${pro.image}`} alt={pro.title} style={{ height: '200px' }} loading="lazy" decoding="async" />
                             <p className='card-title mt-1 px-1'>{pro.title}</p>
                             <p className='card-des px-1'>{pro.description.slice(0, 55)}...</p>
                             <div className='d-flex justify-content-between px-1'>
